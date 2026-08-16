@@ -1,0 +1,388 @@
+/* Tokens de color (docs/CLAUDE.md: modo claro/oscuro obligatorio, sin
+   colores hardcodeados en componentes). Paleta clara por defecto en :root;
+   se sobreescribe bajo prefers-color-scheme: dark. */
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-bg: #ffffff;
+  --color-bg-subtle: #f5f6f7;
+  --color-text: #14161a;
+  --color-text-muted: #55585e;
+  --color-border: #e2e2e2;
+  --color-primary: #2563eb;
+  --color-focus: #2563eb;
+  --color-danger: #b00020;
+  --color-danger-bg: #fdecea;
+  --color-success: #1e7e34;
+  --color-success-bg: #e7f6ea;
+  --color-warning: #8a6100;
+  --color-warning-bg: #fff4d9;
+  --color-overlay: rgba(0, 0, 0, 0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #14161a;
+    --color-bg-subtle: #1c1f24;
+    --color-text: #f2f2f3;
+    --color-text-muted: #a8adb5;
+    --color-border: #2c2f36;
+    --color-primary: #5b8def;
+    --color-focus: #5b8def;
+    --color-danger: #ff6b6b;
+    --color-danger-bg: #3a1f1f;
+    --color-success: #4ade80;
+    --color-success-bg: #163723;
+    --color-warning: #f5c451;
+    --color-warning-bg: #3a2f10;
+    --color-overlay: rgba(0, 0, 0, 0.6);
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+a {
+  color: var(--color-primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-header nav a {
+  margin-right: 1rem;
+}
+
+.app-header nav a.nav-link-active {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+main {
+  padding: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 320px;
+}
+
+.form-error {
+  color: var(--color-danger);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--color-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding: 1.5rem;
+  border-radius: 8px;
+  min-width: 320px;
+  border: 1px solid var(--color-border);
+}
+
+.view-mode-active {
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pagination {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Centro de notificaciones */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+}
+
+.badge-unread {
+  background: var(--color-primary);
+  color: var(--color-bg);
+}
+
+.badge-status-sent,
+.badge-status-read {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.badge-status-queued {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.badge-status-failed {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.badge-status-paid {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.badge-status-pending {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.badge-status-refunded {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+}
+
+.badge-status-received {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+}
+
+.badge-status-diagnosis,
+.badge-status-awaiting_authorization,
+.badge-status-in_repair,
+.badge-status-awaiting_part {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.badge-status-finished,
+.badge-status-delivered {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.badge-status-ordered {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+}
+
+.badge-status-sample_pending,
+.badge-status-sample_taken,
+.badge-status-processing,
+.badge-status-result_available {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.badge-status-validated {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.badge-status-confirmed,
+.badge-status-preparing,
+.badge-status-ready {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.badge-status-cancelled {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.badge-status-new,
+.badge-status-in_review,
+.badge-status-on_hold {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.badge-status-active {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.badge-status-closed,
+.badge-status-archived {
+  background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+}
+
+.notification-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.notification-item {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  background: var(--color-bg);
+}
+
+.notification-item-unread {
+  border-color: var(--color-primary);
+  background: var(--color-bg-subtle);
+}
+
+.notification-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.notification-item-event {
+  font-weight: 600;
+}
+
+.notification-item-subject {
+  margin: 0 0 0.25rem;
+  font-weight: 500;
+}
+
+.notification-item-body {
+  margin: 0 0 0.5rem;
+  color: var(--color-text-muted);
+}
+
+.notification-item-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+/* Dashboard y reportes (Fase 12) */
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+}
+
+.stat-tile-label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.stat-tile-value {
+  font-size: 2rem;
+  font-weight: 600;
+  font-variant-numeric: normal;
+}
+
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 1.5rem;
+}
+
+.bar-chart-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bar-chart-label {
+  width: 130px;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bar-chart-track {
+  flex: 1;
+  background: var(--color-bg-subtle);
+  border-radius: 4px;
+  height: 16px;
+}
+
+.bar-chart-fill {
+  background: var(--color-primary);
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  min-width: 2px;
+}
+
+.bar-chart-value {
+  width: 3rem;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
