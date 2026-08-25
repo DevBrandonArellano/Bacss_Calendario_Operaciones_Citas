@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { eventLabel, statusLabel } from "@/features/notifications/labels";
 import { listNotifications, markNotificationRead } from "@/features/notifications/api";
@@ -22,7 +22,7 @@ export function NotificationsPage() {
   const [error, setError] = useState<string | null>(null);
   const [markingId, setMarkingId] = useState<string | null>(null);
 
-  async function fetchNotifications() {
+  const fetchNotifications = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -34,12 +34,11 @@ export function NotificationsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [page]);
 
   useEffect(() => {
     fetchNotifications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [fetchNotifications]);
 
   async function handleMarkAsRead(notification: Notification) {
     setMarkingId(notification.id);

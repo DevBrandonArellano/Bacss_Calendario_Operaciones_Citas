@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { ApiError } from "@/api/client";
@@ -26,7 +26,7 @@ export function LabOrderListPage() {
   const [creating, setCreating] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  async function fetchLabOrders() {
+  const fetchLabOrders = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -38,12 +38,11 @@ export function LabOrderListPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [page, statusFilter]);
 
   useEffect(() => {
     fetchLabOrders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, statusFilter]);
+  }, [fetchLabOrders]);
 
   useEffect(() => {
     listPatients({ page: 1 })

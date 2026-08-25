@@ -28,7 +28,7 @@ Consumida exclusivamente por el frontend propio (React SPA) y, a futuro, apps m�
 | Documentos | `GET/POST /api/documents/`, `GET /api/documents/{id}/download/`, `DELETE /api/documents/{id}/` | Descargas auditadas. |
 | Tareas | `GET/POST /api/tasks/`, `GET/PATCH/DELETE /api/tasks/{id}/` | |
 | Búsqueda global | `GET /api/search/?q=` | Filtrado por módulos activos y permisos del usuario. |
-| Reportes | `GET /api/reports/dashboard/`, `GET /api/reports/appointments/`, `GET /api/reports/revenue/`, ... | Uno por tipo de reporte, ver `docs/roadmap.md` para el detalle por fase. |
+| Reportes | `GET /api/reports/dashboard/`, `GET /api/reports/charts/?metric=&group_by=`, `GET /api/reports/summary/`, `GET /api/reports/modules/{code}/` | Cuatro endpoints, no uno por métrica: `charts/` es paramétrico. Permisos `reports:read` y `reports:financial` (Fase 12). |
 | Auditoría | `GET /api/audit-logs/` | Solo lectura, solo roles con permiso `audit:read`. |
 
 ## Rutas por módulo (solo si el módulo está activo para la organización)

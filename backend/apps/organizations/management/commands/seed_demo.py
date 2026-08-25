@@ -21,6 +21,12 @@ from apps.modules.laboratory.services import (
     TransitionLabTestUseCase,
     ValidateLabResultUseCase,
 )
+from apps.modules.legal.models import CaseTask, Hearing
+from apps.modules.legal.services import (
+    CreateLegalCaseRequest,
+    CreateLegalCaseUseCase,
+    TransitionLegalCaseUseCase,
+)
 from apps.modules.moto.models import Motorcycle, WorkOrderItemType
 from apps.modules.moto.services import (
     AddWorkOrderItemRequest,
@@ -28,10 +34,13 @@ from apps.modules.moto.services import (
     CreateWorkOrderRequest,
     CreateWorkOrderUseCase,
 )
-from apps.modules.legal.models import CaseTask, Hearing
-from apps.modules.legal.services import CreateLegalCaseRequest, CreateLegalCaseUseCase, TransitionLegalCaseUseCase
 from apps.modules.store.models import Inventory, Product, ProductLaunch, ProductVariant
-from apps.modules.store.services import CreateOrderRequest, CreateOrderUseCase, OrderItemSpec, TransitionOrderUseCase
+from apps.modules.store.services import (
+    CreateOrderRequest,
+    CreateOrderUseCase,
+    OrderItemSpec,
+    TransitionOrderUseCase,
+)
 from apps.organizations.models import ModuleActivation, ModuleCode, Organization
 from apps.payments.services import CreatePaymentRequest, CreatePaymentUseCase
 from apps.scheduling.models import Schedule
@@ -207,7 +216,11 @@ def _seed_store_catalog(*, organization, branch, customers):
         organization=organization, sku="CAM-001", name="Camiseta UrbanStore", category="Ropa", price="20.00"
     )
     cap = Product.objects.all_objects.create(
-        organization=organization, sku="GOR-001", name="Gorra UrbanStore", category="Accesorios", price="12.00"
+        organization=organization,
+        sku="GOR-001",
+        name="Gorra UrbanStore",
+        category="Accesorios",
+        price="12.00",
     )
     shirt_variants = [
         ProductVariant.objects.all_objects.create(

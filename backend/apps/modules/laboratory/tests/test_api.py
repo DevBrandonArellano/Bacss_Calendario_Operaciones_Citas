@@ -116,14 +116,18 @@ class TestLabResultReadAudit:
         response = auth_client.get(reverse("lab-result-detail", args=[lab_result.id]))
 
         assert response.status_code == status.HTTP_200_OK
-        entry = AuditLog.objects.get(action=AuditAction.READ, entity_type="LabResult", entity_id=str(lab_result.id))
+        entry = AuditLog.objects.get(
+            action=AuditAction.READ, entity_type="LabResult", entity_id=str(lab_result.id)
+        )
         assert entry.user_id is not None
 
     def test_listar_resultados_queda_auditado(self, auth_client, lab_active, lab_result):
         response = auth_client.get(reverse("lab-result-list"))
 
         assert response.status_code == status.HTTP_200_OK
-        assert AuditLog.objects.filter(action=AuditAction.READ, entity_type="LabResult", entity_id="").exists()
+        assert AuditLog.objects.filter(
+            action=AuditAction.READ, entity_type="LabResult", entity_id=""
+        ).exists()
 
     def test_lab_test_no_expone_valores_clinicos_sin_pasar_por_lab_results(
         self, auth_client, lab_active, lab_test, lab_result

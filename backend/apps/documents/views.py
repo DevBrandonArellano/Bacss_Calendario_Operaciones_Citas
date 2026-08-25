@@ -13,7 +13,9 @@ from core import exceptions as domain_exceptions
 from core.owner_access import check_owner_permission
 
 
-class DocumentViewSet(CreateModelMixin, RetrieveModelMixin, ListModelMixin, DestroyModelMixin, GenericViewSet):
+class DocumentViewSet(
+    CreateModelMixin, RetrieveModelMixin, ListModelMixin, DestroyModelMixin, GenericViewSet
+):
     """Sin `ModuleActiveRequired`: el control de acceso real depende del
     tipo de propietario (`core/owner_access.py`), no de un módulo fijo —
     `Document` es transversal (docs/roadmap.md, Fase 11B)."""

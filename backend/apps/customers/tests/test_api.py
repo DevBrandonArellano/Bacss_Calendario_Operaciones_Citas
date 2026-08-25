@@ -28,9 +28,7 @@ def test_create_customer_ignores_organization_sent_in_body(auth_client, organiza
     assert customer.organization_id == organization.id
 
 
-def test_list_customers_never_returns_other_organization_data(
-    auth_client, organization, other_organization
-):
+def test_list_customers_never_returns_other_organization_data(auth_client, organization, other_organization):
     Customer.objects.all_objects.create(organization=organization, first_name="Propio", last_name="Cliente")
     Customer.objects.all_objects.create(
         organization=other_organization, first_name="Ajeno", last_name="Cliente"
@@ -103,9 +101,7 @@ def test_search_matches_name_document_phone_and_email(auth_client, organization,
 
 def test_search_never_returns_other_organization_data(auth_client, organization, other_organization):
     Customer.objects.all_objects.create(organization=organization, first_name="Ana", last_name="Perez")
-    Customer.objects.all_objects.create(
-        organization=other_organization, first_name="Ana", last_name="Ajena"
-    )
+    Customer.objects.all_objects.create(organization=other_organization, first_name="Ana", last_name="Ajena")
 
     response = auth_client.get(reverse("customer-search"), {"q": "Ana"})
 

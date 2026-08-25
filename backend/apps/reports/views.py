@@ -15,7 +15,9 @@ def _parse_date(value: str | None, default: date) -> date:
     try:
         return datetime.strptime(value, "%Y-%m-%d").date()
     except ValueError as exc:
-        raise domain_exceptions.ValidationError(f"Fecha inválida: '{value}' (formato esperado YYYY-MM-DD).") from exc
+        raise domain_exceptions.ValidationError(
+            f"Fecha inválida: '{value}' (formato esperado YYYY-MM-DD)."
+        ) from exc
 
 
 def _date_range(request, default_days: int = 30) -> tuple[date, date]:

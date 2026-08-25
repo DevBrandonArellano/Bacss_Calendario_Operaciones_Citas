@@ -1,7 +1,7 @@
 import pytest
 from django.db import IntegrityError
 
-from apps.modules.store.models import OrderItem, Product, ProductVariant
+from apps.modules.store.models import OrderItem, ProductVariant
 
 pytestmark = pytest.mark.django_db
 
@@ -19,7 +19,9 @@ class TestProductVariant:
         assert variant.effective_price == "15.00"
 
     def test_effective_price_cae_al_precio_del_producto_sin_override(self, organization, product):
-        variant = ProductVariant.objects.all_objects.create(organization=organization, product=product, sku="Y")
+        variant = ProductVariant.objects.all_objects.create(
+            organization=organization, product=product, sku="Y"
+        )
         assert variant.effective_price == product.price
 
 

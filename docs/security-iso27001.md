@@ -13,6 +13,7 @@ La certificación ISO 27001 es organizacional; este documento mapea qué control
 | A.8.15 Registro (logging) | Sí | Logging estructurado RFC 5424 con correlation-id (`docs/logging.md`); `AuditLog` inmutable para acciones sensibles | Fase 2+ |
 | A.8.16 Monitoreo de actividades | Parcial | Logs estructurados preparados para ingestión por herramienta de monitoreo/alertas (hook a Sentry en Fase 14) | Fase 14 |
 | A.8.25 Ciclo de vida de desarrollo seguro | Sí | Validación de entrada en serializers, uso exclusivo del ORM, revisión de dependencias (SCA), SAST en CI | Fase 2+, formalizado Fase 13 |
+| A.8.8 Gestión de vulnerabilidades técnicas | Sí | Revisión SCA de dependencias con `pip-audit` (backend) y `npm audit` (frontend); ver "Revisiones de dependencias" abajo | Primera revisión 2026-08-17; automatización en CI en Fase 13 |
 | A.8.26 Requisitos de seguridad de aplicaciones | Sí | Protección OWASP Top 10 (inyección, XSS, CSRF, SSRF, deserialización insegura) revisada explícitamente en Fase 13 | Fase 13 |
 | A.8.28 Codificación segura | Sí | Estándares de `CLAUDE.md` (sin SQL crudo, sin `except: pass`, taxonomía de excepciones) | Transversal |
 | A.8.13 Respaldo de información | Sí | Backups cifrados con restauración probada (`docs/backup-strategy.md`) | Fase 14 |
@@ -21,3 +22,30 @@ La certificación ISO 27001 es organizacional; este documento mapea qué control
 | A.5.36 Cumplimiento de políticas de seguridad | Parcial | Este documento y `docs/security-review.md` (Fase 13) sirven de evidencia técnica; la política formal es responsabilidad organizacional | Fase 13 |
 
 **Convención de estado:** "Diseñado" = decisión tomada y documentada en Fase 1; "Fase N" = se implementa en esa fase; "Parcial" = el software provee la base técnica pero el control completo requiere proceso organizacional adicional.
+
+## Revisiones de dependencias (A.8.8)
+
+Evidencia de la gestión de vulnerabilidades técnicas. Herramientas: `pip-audit -r` (backend) y `npm audit` (frontend).
+
+### 2026-08-17 — primera revisión SCA
+
+19 vulnerabilidades encontradas, 19 cerradas. Ninguna había sido detectada antes porque no se había corrido SCA sobre el proyecto.
+
+| Componente | De → a | Hallazgo |
+|---|---|---|
+| `django` | 5.0.14 → 5.2.17 (LTS) | **10 CVEs sin parche.** La rama 5.0 quedó EOL en abril de 2025, así que ningún fix llegaría nunca a ella; se migró a 5.2 LTS (soporte hasta 2028), manteniendo la decisión "Django 5" del ADR-000 |
+| `djangorestframework-simplejwt` | 5.3.1 → 5.5.1 | PYSEC-2026-1305, en la ruta de autenticación |
+| `pyjwt` | 2.10.1 → 2.13.0 | 7 advisories en verificación de tokens |
+| `sqlparse` | 0.5.3 → 0.6.0 | GHSA-27jp-wm6q-gp25 |
+| `pytest` | 8.2.2 → 9.1.1 | PYSEC-2026-1845 (solo entorno de desarrollo) |
+| `react-router-dom` | 6.30.4 → 7.18.2 | 3 advisories de open redirect / XSS. **Único componente vulnerable que llega al navegador del usuario.** No existía fix en la rama 6.x: 6.30.4 era la última publicada y seguía afectada |
+| `vite` | 5.4.x → 8.2.1 | HIGH: bypass de `server.fs.deny` en Windows, path traversal, esbuild (solo servidor de desarrollo) |
+| `vitest` | 2.0.x → 4.1.10 | CRITICAL: lectura/ejecución arbitraria de archivos vía servidor UI (solo desarrollo) |
+
+Arrastres por compatibilidad con Django 5.2: DRF 3.16.1, psycopg 3.2, celery 5.5, django-cors-headers 4.9, django-filter 25.2, drf-spectacular 0.28, gunicorn 23, django-stubs 5.2, pytest-django 4.14, pytest-cov 7.
+
+**Verificación:** `pip-audit` y `npm audit` sin hallazgos; `manage.py check` sin issues; sin drift de migraciones; 328 tests backend recolectan sin error; 57/57 tests frontend en verde.
+
+**Deuda abierta de esta revisión:** la suite `pytest` completa no se ejecutó contra PostgreSQL real (Docker no disponible en el equipo de desarrollo en esa fecha). El salto Django 5.0 → 5.2 está validado solo estáticamente y debe re-verificarse con `pytest` completo — con atención al test de concurrencia, que depende de `ExclusionConstraint` + `btree_gist`.
+
+**Automatización pendiente (Fase 13):** correr ambos audits en CI y fallar el build ante vulnerabilidades de severidad alta o crítica, para que esta revisión deje de ser manual.

@@ -37,7 +37,9 @@ class TestUploadDocument:
         assert document.size_bytes > 0
         assert AuditLog.objects.filter(action=AuditAction.CREATE, entity_type="Document").exists()
 
-    def test_recepcion_no_puede_subir_documento_de_un_caso_legal(self, reception_client, organization, customer):
+    def test_recepcion_no_puede_subir_documento_de_un_caso_legal(
+        self, reception_client, organization, customer
+    ):
         payload = {
             "owner_type": "case",
             "owner_id": str(customer.id),  # id arbitrario, la autorización falla antes de resolverlo
@@ -76,13 +78,17 @@ class TestListDocuments:
 
 class TestDownloadDocument:
     def test_descargar_queda_auditado(self, auth_client, organization, customer):
-        upload_response = auth_client.post(reverse("document-list"), _upload_payload(customer), format="multipart")
+        upload_response = auth_client.post(
+            reverse("document-list"), _upload_payload(customer), format="multipart"
+        )
         document_id = upload_response.data["id"]
 
         response = auth_client.get(reverse("document-download", args=[document_id]))
 
         assert response.status_code == status.HTTP_200_OK
-        assert AuditLog.objects.filter(action=AuditAction.DOWNLOAD, entity_type="Document", entity_id=document_id).exists()
+        assert AuditLog.objects.filter(
+            action=AuditAction.DOWNLOAD, entity_type="Document", entity_id=document_id
+        ).exists()
 
 
 class TestTenantIsolation:

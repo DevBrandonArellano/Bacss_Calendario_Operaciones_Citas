@@ -35,12 +35,18 @@ PERMISSIONS: list[tuple[str, str]] = [
     ("lab_results:read", "Ver resultados clínicos (dato sensible, módulo Laboratorio)"),
     ("lab_results:write", "Validar resultados clínicos — acción auditada (módulo Laboratorio)"),
     ("store:read", "Ver productos, variantes, inventario, lanzamientos y pedidos (módulo Tienda)"),
-    ("store:write", "Crear/editar productos y variantes, registrar inventario y gestionar pedidos (módulo Tienda)"),
+    (
+        "store:write",
+        "Crear/editar productos y variantes, registrar inventario y gestionar pedidos (módulo Tienda)",
+    ),
     ("legal:read", "Ver casos, cronología, audiencias y tareas (dato sensible, módulo Legal)"),
     ("legal:write", "Crear/editar casos, audiencias y tareas (módulo Legal)"),
     ("legal:read_all", "Ver todos los casos de la organización, no solo los propios (módulo Legal)"),
     ("reports:read", "Ver el dashboard y los reportes operativos"),
-    ("reports:financial", "Ver cifras financieras y de productividad cruzada en reportes (ingresos, clientes nuevos)"),
+    (
+        "reports:financial",
+        "Ver cifras financieras y de productividad cruzada en reportes (ingresos, clientes nuevos)",
+    ),
 ]
 
 ROLE_PERMISSIONS: dict[str, list[str]] = {

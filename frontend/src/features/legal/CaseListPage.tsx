@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { ApiError } from "@/api/client";
@@ -30,7 +30,7 @@ export function CaseListPage() {
   const [creating, setCreating] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  async function fetchCases() {
+  const fetchCases = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -42,12 +42,11 @@ export function CaseListPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [page, statusFilter]);
 
   useEffect(() => {
     fetchCases();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, statusFilter]);
+  }, [fetchCases]);
 
   useEffect(() => {
     listCustomers({ page: 1 })

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import { listAppointments } from "@/features/appointments/api";
@@ -43,7 +43,7 @@ export function PaymentsPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  async function fetchPayments() {
+  const fetchPayments = useCallback(async () => {
     setLoading(true);
     setListError(null);
     try {
@@ -59,12 +59,11 @@ export function PaymentsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [page, statusFilter, selectedCustomer, preselectedCustomerId]);
 
   useEffect(() => {
     fetchPayments();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, statusFilter, selectedCustomer]);
+  }, [fetchPayments]);
 
   useEffect(() => {
     if (!preselectedCustomerId) return;

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { useAuth } from "@/features/auth/AuthContext";
+import { useAuth } from "@/features/auth/useAuth";
 import { getGeneralReport, getModuleReport } from "@/features/reports/api";
 import { STATUS_LABELS } from "@/types/appointment";
 import type { GeneralReport } from "@/types/report";
@@ -68,7 +68,7 @@ export function ReportsPage() {
   const [moduleReport, setModuleReport] = useState<Record<string, unknown> | null>(null);
   const [moduleError, setModuleError] = useState<string | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -79,11 +79,15 @@ export function ReportsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [dateFrom, dateTo]);
 
+  // Carga inicial únicamente. Cambiar las fechas NO refresca solo: lo hace el
+  // botón "Aplicar", para no pegarle a la API con fechas a medio escribir.
+  // `loadRef` mantiene la última versión de `load` sin re-disparar el efecto.
+  const loadRef = useRef(load);
+  loadRef.current = load;
   useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    loadRef.current();
   }, []);
 
   async function handleModuleReport(code: string) {

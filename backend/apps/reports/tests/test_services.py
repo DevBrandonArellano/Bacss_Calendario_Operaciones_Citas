@@ -20,7 +20,9 @@ def professional_user(organization, branch, system_roles, make_user):
 
 
 class TestDashboardSummary:
-    def test_admin_ve_cifras_financieras(self, organization, org_admin_user, make_appointment, employee, customer):
+    def test_admin_ve_cifras_financieras(
+        self, organization, org_admin_user, make_appointment, employee, customer
+    ):
         make_appointment(employee=employee, customer=customer)
 
         summary = services.get_dashboard_summary(organization=organization, user=org_admin_user)
@@ -64,7 +66,9 @@ class TestChartData:
                 date_to=date.today(),
             )
 
-    def test_appointments_series_agrupa_por_dia(self, organization, org_admin_user, make_appointment, employee, customer):
+    def test_appointments_series_agrupa_por_dia(
+        self, organization, org_admin_user, make_appointment, employee, customer
+    ):
         make_appointment(employee=employee, customer=customer)
 
         data = services.get_chart_data(
@@ -92,7 +96,9 @@ class TestChartData:
 
 
 class TestGeneralReport:
-    def test_calcula_tasa_de_cancelacion(self, organization, org_admin_user, make_appointment, employee, customer):
+    def test_calcula_tasa_de_cancelacion(
+        self, organization, org_admin_user, make_appointment, employee, customer
+    ):
         make_appointment(employee=employee, customer=customer, status="cancelled")
         make_appointment(employee=employee, customer=customer, status="completed")
 
@@ -115,7 +121,10 @@ class TestGeneralReport:
         make_appointment(employee=own_employee, customer=customer, status="completed")
 
         report = services.get_general_report(
-            organization=organization, user=user, date_from=date.today() - timedelta(days=1), date_to=date.today()
+            organization=organization,
+            user=user,
+            date_from=date.today() - timedelta(days=1),
+            date_to=date.today(),
         )
 
         assert len(report["productivity"]) == 1

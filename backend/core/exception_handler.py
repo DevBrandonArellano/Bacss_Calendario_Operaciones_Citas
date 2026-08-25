@@ -80,9 +80,7 @@ def domain_exception_handler(exc, context):
             str(exc),
             extra={"event": f"error.{code}", "severity": _EXPECTED_SEVERITY, "request_id": request_id},
         )
-        return _build_error_response(
-            code, _message_for_drf_exception(exc), details, response.status_code
-        )
+        return _build_error_response(code, _message_for_drf_exception(exc), details, response.status_code)
 
     # Excepción no anticipada: se registra como error, no se filtra detalle al cliente.
     logger.log(

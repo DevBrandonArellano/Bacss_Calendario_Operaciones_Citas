@@ -18,7 +18,9 @@ def branch(organization):
 
 @pytest.fixture
 def customer(organization):
-    return Customer.objects.all_objects.create(organization=organization, first_name="Ana", last_name="Torres")
+    return Customer.objects.all_objects.create(
+        organization=organization, first_name="Ana", last_name="Torres"
+    )
 
 
 @pytest.fixture

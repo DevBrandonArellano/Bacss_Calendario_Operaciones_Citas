@@ -79,9 +79,7 @@ class TestAislamientoMultitenant:
         assert response.data["id"] == str(organization.id)
         assert response.data["id"] != str(other_organization.id)
 
-    def test_valor_limite_organization_id_nulo_no_filtra_todo_por_accidente(
-        self, api_client, organization
-    ):
+    def test_valor_limite_organization_id_nulo_no_filtra_todo_por_accidente(self, api_client, organization):
         """Caja blanca: sin organización en contexto, el manager devuelve vacío, no todo."""
         Branch.objects.all_objects.create(organization=organization, name="Sucursal A")
 

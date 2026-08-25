@@ -29,8 +29,6 @@ def test_module_activation_unique_per_organization_and_module():
 
 def test_deactivated_module_is_not_active():
     org = Organization.objects.create(name="Laboratorio ABC")
-    ModuleActivation.objects.create(
-        organization=org, module_code=ModuleCode.LABORATORY, is_active=False
-    )
+    ModuleActivation.objects.create(organization=org, module_code=ModuleCode.LABORATORY, is_active=False)
 
     assert org.has_module_active(ModuleCode.LABORATORY) is False

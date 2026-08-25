@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { type FormEvent, useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/api/client";
 import { downloadDocument, listDocuments, uploadDocument } from "@/features/documents/api";
@@ -18,7 +18,7 @@ export function DocumentsPanel({ ownerType, ownerId }: DocumentsPanelProps) {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -31,12 +31,11 @@ export function DocumentsPanel({ ownerType, ownerId }: DocumentsPanelProps) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [ownerType, ownerId]);
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ownerType, ownerId]);
+  }, [load]);
 
   async function handleUpload(event: FormEvent) {
     event.preventDefault();

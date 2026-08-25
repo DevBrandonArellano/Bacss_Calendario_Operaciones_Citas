@@ -14,7 +14,11 @@ from apps.modules.legal.serializers import (
     LegalCaseSerializer,
     TransitionLegalCaseSerializer,
 )
-from apps.modules.legal.services import CreateLegalCaseRequest, CreateLegalCaseUseCase, TransitionLegalCaseUseCase
+from apps.modules.legal.services import (
+    CreateLegalCaseRequest,
+    CreateLegalCaseUseCase,
+    TransitionLegalCaseUseCase,
+)
 from core.permissions import HasPermission, ModuleActiveRequired
 
 MODULE_CODE = "legal"
@@ -27,7 +31,9 @@ def can_read_all_cases(user) -> bool:
     return bool(getattr(user, "is_platform_superadmin", False) or user.has_permission("legal:read_all"))
 
 
-class LegalCaseViewSet(CreateModelMixin, RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericViewSet):
+class LegalCaseViewSet(
+    CreateModelMixin, RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericViewSet
+):
     serializer_class = LegalCaseSerializer
     queryset = LegalCase.objects.all()
     filter_backends = [DjangoFilterBackend, OrderingFilter]

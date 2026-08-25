@@ -38,11 +38,11 @@ class Schedule(TenantAwareModel, TimeStampedModel):
         ordering = ["weekday", "start_time"]
         constraints = [
             models.CheckConstraint(
-                check=Q(branch__isnull=False) | Q(employee__isnull=False),
+                condition=Q(branch__isnull=False) | Q(employee__isnull=False),
                 name="schedule_requires_branch_or_employee",
             ),
             models.CheckConstraint(
-                check=Q(start_time__lt=models.F("end_time")), name="schedule_start_before_end"
+                condition=Q(start_time__lt=models.F("end_time")), name="schedule_start_before_end"
             ),
         ]
 
@@ -85,7 +85,8 @@ class AvailabilityBlock(TenantAwareModel, TimeStampedModel):
         ordering = ["date", "start_time"]
         constraints = [
             models.CheckConstraint(
-                check=Q(start_time__lt=models.F("end_time")), name="availability_block_start_before_end"
+                condition=Q(start_time__lt=models.F("end_time")),
+                name="availability_block_start_before_end",
             ),
         ]
 

@@ -29,9 +29,7 @@ def test_create_branch_ignores_organization_id_sent_in_body(auth_client, organiz
     assert branch.organization_id == organization.id  # nunca el de other_organization
 
 
-def test_list_branches_never_returns_other_organization_data(
-    auth_client, organization, other_organization
-):
+def test_list_branches_never_returns_other_organization_data(auth_client, organization, other_organization):
     Branch.objects.all_objects.create(organization=organization, name="Sucursal propia")
     Branch.objects.all_objects.create(organization=other_organization, name="Sucursal ajena")
 
@@ -41,9 +39,7 @@ def test_list_branches_never_returns_other_organization_data(
     assert names == ["Sucursal propia"]
 
 
-def test_retrieve_branch_of_other_organization_returns_404_not_403(
-    auth_client, other_organization
-):
+def test_retrieve_branch_of_other_organization_returns_404_not_403(auth_client, other_organization):
     foreign_branch = Branch.objects.all_objects.create(organization=other_organization, name="Ajena")
 
     response = auth_client.get(reverse("branch-detail", args=[foreign_branch.id]))

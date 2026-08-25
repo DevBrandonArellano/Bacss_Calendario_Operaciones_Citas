@@ -99,7 +99,11 @@ class TestOrderPipelineApi:
         )
         assert response.status_code == status.HTTP_409_CONFLICT
 
-    def test_transicion_invalida_devuelve_409(self, auth_client, store_active, organization, customer, branch):
+    def test_transicion_invalida_devuelve_409(
+        self, auth_client, store_active, organization, customer, branch
+    ):
         order = Order.objects.all_objects.create(organization=organization, customer=customer, branch=branch)
-        response = auth_client.post(reverse("store-order-transition", args=[order.id]), {"status": "delivered"})
+        response = auth_client.post(
+            reverse("store-order-transition", args=[order.id]), {"status": "delivered"}
+        )
         assert response.status_code == status.HTTP_409_CONFLICT

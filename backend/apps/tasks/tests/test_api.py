@@ -45,7 +45,9 @@ class TestListTasks:
             format="json",
         )
 
-        response = auth_client.get(reverse("task-list"), {"owner_type": "customer", "owner_id": str(customer.id)})
+        response = auth_client.get(
+            reverse("task-list"), {"owner_type": "customer", "owner_id": str(customer.id)}
+        )
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data["count"] == 1
@@ -81,7 +83,9 @@ class TestUpdateTask:
         )
         task_id = create_response.data["id"]
 
-        response = auth_client.patch(reverse("task-detail", args=[task_id]), {"status": "completed"}, format="json")
+        response = auth_client.patch(
+            reverse("task-detail", args=[task_id]), {"status": "completed"}, format="json"
+        )
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data["status"] == "completed"

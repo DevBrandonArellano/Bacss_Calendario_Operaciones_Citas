@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { type FormEvent, useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { ApiError } from "@/api/client";
@@ -20,7 +20,7 @@ export function WorkOrderListPage() {
   const [creating, setCreating] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  async function fetchWorkOrders() {
+  const fetchWorkOrders = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -32,12 +32,11 @@ export function WorkOrderListPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [page, statusFilter]);
 
   useEffect(() => {
     fetchWorkOrders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, statusFilter]);
+  }, [fetchWorkOrders]);
 
   useEffect(() => {
     listMotorcycles({ page: 1 })

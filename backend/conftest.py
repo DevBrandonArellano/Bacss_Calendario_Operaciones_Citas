@@ -16,9 +16,7 @@ def other_organization(db) -> Organization:
 
 
 def _make_user(organization, email, roles=(), **extra):
-    user = User.objects.create_user(
-        organization=organization, email=email, password="Password123!", **extra
-    )
+    user = User.objects.create_user(organization=organization, email=email, password="Password123!", **extra)
     if roles:
         role_objs = Role.objects.filter(code__in=roles)
         user.roles.set(role_objs)

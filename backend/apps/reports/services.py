@@ -69,7 +69,9 @@ def get_dashboard_summary(*, organization, user) -> dict:
         return summary
 
 
-def get_chart_data(*, organization, user, metric: str, group_by: str, date_from: date, date_to: date) -> list[dict]:
+def get_chart_data(
+    *, organization, user, metric: str, group_by: str, date_from: date, date_to: date
+) -> list[dict]:
     trunc = TRUNC_FUNCS.get(group_by)
     if trunc is None:
         from core import exceptions as domain_exceptions
@@ -152,19 +154,17 @@ def _top_services(user, date_from: date, date_to: date, limit: int = 10) -> list
     if employee is not None:
         qs = qs.filter(employee=employee)
 
-    rows = (
-        qs.values("service__id", "service__name")
-        .annotate(count=Count("id"))
-        .order_by("-count")[:limit]
-    )
-    return [{"service_id": str(row["service__id"]), "service_name": row["service__name"], "count": row["count"]} for row in rows]
+    rows = qs.values("service__id", "service__name").annotate(count=Count("id")).order_by("-count")[:limit]
+    return [
+        {"service_id": str(row["service__id"]), "service_name": row["service__name"], "count": row["count"]}
+        for row in rows
+    ]
 
 
 def get_general_report(*, organization, user, date_from: date, date_to: date) -> dict:
     from apps.appointments.models import Appointment, AppointmentStatus
     from apps.customers.models import Customer
     from apps.payments.models import Payment, PaymentStatus
-    from apps.services.models import Employee
 
     with tenant_scope(organization.id):
         employee = _employee_scope(user)
@@ -260,7 +260,9 @@ def _moto_report(user, date_from: date, date_to: date) -> dict:
     by_status = dict(qs.values_list("status").annotate(count=Count("id")))
     report = {"work_orders": {"total": sum(by_status.values()), "by_status": by_status}}
     if user.has_permission("reports:financial"):
-        report["revenue"] = qs.filter(status="delivered").aggregate(total=Sum("total"))["total"] or Decimal("0")
+        report["revenue"] = qs.filter(status="delivered").aggregate(total=Sum("total"))["total"] or Decimal(
+            "0"
+        )
     return report
 
 
@@ -279,8 +281,8 @@ def _store_report(user, date_from: date, date_to: date) -> dict:
     by_status = dict(qs.values_list("status").annotate(count=Count("id")))
     report = {"orders": {"total": sum(by_status.values()), "by_status": by_status}}
     if user.has_permission("reports:financial"):
-        report["revenue"] = (
-            qs.exclude(status="cancelled").aggregate(total=Sum("total"))["total"] or Decimal("0")
+        report["revenue"] = qs.exclude(status="cancelled").aggregate(total=Sum("total"))["total"] or Decimal(
+            "0"
         )
     return report
 

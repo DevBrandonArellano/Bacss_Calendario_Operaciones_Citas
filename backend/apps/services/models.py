@@ -15,9 +15,7 @@ class Service(TenantAwareModel, TimeStampedModel):
     duration_minutes = models.PositiveIntegerField(validators=[MinValueValidator(1)])
     price = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
     status = models.CharField(max_length=20, choices=ServiceStatus.choices, default=ServiceStatus.ACTIVE)
-    branches = models.ManyToManyField(
-        "branches.Branch", related_name="services", blank=True
-    )
+    branches = models.ManyToManyField("branches.Branch", related_name="services", blank=True)
 
     class Meta:
         ordering = ["name"]

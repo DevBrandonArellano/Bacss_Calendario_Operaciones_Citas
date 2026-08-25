@@ -29,17 +29,12 @@ class CorrelationIdFilter(logging.Filter):
 
 
 def _scrub(data: dict) -> dict:
-    return {
-        key: ("***" if key.lower() in _SENSITIVE_KEYS else value)
-        for key, value in data.items()
-    }
+    return {key: ("***" if key.lower() in _SENSITIVE_KEYS else value) for key, value in data.items()}
 
 
 class StructuredJsonFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
-        severity = getattr(record, "severity", None) or _RFC5424_BY_LEVELNO.get(
-            record.levelno, "info"
-        )
+        severity = getattr(record, "severity", None) or _RFC5424_BY_LEVELNO.get(record.levelno, "info")
         payload = {
             "timestamp": datetime.fromtimestamp(record.created, tz=UTC).isoformat(),
             "severity": severity,

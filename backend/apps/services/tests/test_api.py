@@ -29,9 +29,7 @@ def test_create_service_rejects_zero_duration(auth_client):
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
-def test_list_services_never_returns_other_organization_data(
-    auth_client, organization, other_organization
-):
+def test_list_services_never_returns_other_organization_data(auth_client, organization, other_organization):
     Service.objects.all_objects.create(
         organization=organization, name="Propio", duration_minutes=30, price="10.00"
     )
@@ -71,9 +69,7 @@ def test_create_employee(auth_client, organization):
     assert employee.organization_id == organization.id
 
 
-def test_list_employees_never_returns_other_organization_data(
-    auth_client, organization, other_organization
-):
+def test_list_employees_never_returns_other_organization_data(auth_client, organization, other_organization):
     Employee.objects.all_objects.create(organization=organization, first_name="Propio", last_name="Empleado")
     Employee.objects.all_objects.create(
         organization=other_organization, first_name="Ajeno", last_name="Empleado"

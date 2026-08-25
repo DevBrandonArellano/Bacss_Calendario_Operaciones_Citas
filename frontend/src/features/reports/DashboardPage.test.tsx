@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import type { AxiosRequestConfig } from "axios";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -11,7 +12,7 @@ vi.mock("@/api/client", () => ({
 }));
 
 function mockReportsApi(withFinancial: boolean) {
-  vi.mocked(apiClient.get).mockImplementation((url: string, config?: { params?: { metric?: string } }) => {
+  vi.mocked(apiClient.get).mockImplementation((url: string, config?: AxiosRequestConfig) => {
     if (url === "/reports/dashboard/") {
       return Promise.resolve({
         data: {

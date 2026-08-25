@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
-import { useAuth } from "@/features/auth/AuthContext";
+import { useAuth } from "@/features/auth/useAuth";
 
 function navLinkClassName({ isActive }: { isActive: boolean }): string {
   return isActive ? "nav-link-active" : "";

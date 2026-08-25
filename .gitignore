@@ -26,6 +26,16 @@ frontend/dist/
 frontend/.env
 frontend/*.tsbuildinfo
 
+# Secrets / keys
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Claude Code local-only files
+.claude/settings.local.json
+.claude/worktrees/
+
 # Editor / SO
 .vscode/
 .idea/

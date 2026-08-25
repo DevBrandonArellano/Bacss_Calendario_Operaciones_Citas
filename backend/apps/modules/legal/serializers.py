@@ -37,7 +37,15 @@ class TransitionLegalCaseSerializer(serializers.Serializer):
 class CaseEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = CaseEvent
-        fields = ["id", "legal_case", "event_at", "event_type", "description", "created_by_user", "created_at"]
+        fields = [
+            "id",
+            "legal_case",
+            "event_at",
+            "event_type",
+            "description",
+            "created_by_user",
+            "created_at",
+        ]
         read_only_fields = ["id", "legal_case", "created_by_user", "created_at"]
 
 

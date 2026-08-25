@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { type FormEvent, useCallback, useEffect, useState } from "react";
 
 import { ApiError } from "@/api/client";
 import { createTask, listTasks, updateTaskStatus } from "@/features/tasks/api";
@@ -19,7 +19,7 @@ export function TasksPanel({ ownerType, ownerId }: TasksPanelProps) {
   const [dueDate, setDueDate] = useState("");
   const [creating, setCreating] = useState(false);
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -31,12 +31,11 @@ export function TasksPanel({ ownerType, ownerId }: TasksPanelProps) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [ownerType, ownerId]);
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ownerType, ownerId]);
+  }, [load]);
 
   async function handleCreate(event: FormEvent) {
     event.preventDefault();

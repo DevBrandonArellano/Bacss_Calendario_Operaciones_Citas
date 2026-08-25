@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
 import { globalSearch } from "@/features/search/api";
@@ -14,7 +14,7 @@ export function SearchPage() {
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
 
-  async function runSearch(q: string) {
+  const runSearch = useCallback(async (q: string) => {
     if (q.trim().length < 2) {
       setResults([]);
       setSearched(false);
@@ -31,12 +31,13 @@ export function SearchPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
+  // Depende de `initialQuery` y no solo del montaje: llegar a /buscar?q=B desde
+  // /buscar?q=A no desmonta la pantalla, y sin esto seguiría mostrando A.
   useEffect(() => {
     if (initialQuery) runSearch(initialQuery);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [initialQuery, runSearch]);
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 
-import { useAuth } from "@/features/auth/AuthContext";
+import { useAuth } from "@/features/auth/useAuth";
 
 /** Bloquea una ruta de módulo especializado si no está activo para la
  * organización del usuario (docs/module-system.md). Defensa en el

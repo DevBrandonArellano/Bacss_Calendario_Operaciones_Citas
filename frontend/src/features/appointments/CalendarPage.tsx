@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -59,7 +59,7 @@ export function CalendarPage() {
     );
   }, []);
 
-  async function fetchAppointments() {
+  const fetchAppointments = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -74,7 +74,7 @@ export function CalendarPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [range, viewMode, employeeId]);
 
   useEffect(() => {
     if (viewMode === "agenda" && !employeeId) {
@@ -82,8 +82,7 @@ export function CalendarPage() {
       return;
     }
     fetchAppointments();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewMode, currentDate, employeeId]);
+  }, [fetchAppointments, viewMode, employeeId]);
 
   function step(direction: 1 | -1) {
     if (viewMode === "day") setCurrentDate((d) => addDays(d, direction));

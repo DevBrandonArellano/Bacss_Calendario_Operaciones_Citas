@@ -48,7 +48,13 @@ class TestAccesoPorRol:
 
 class TestAlcanceSobreCasosPropios:
     def test_profesional_sin_read_all_solo_ve_sus_casos_asignados(
-        self, professional_client, legal_active, organization, customer, lawyer, professional_user_and_employee
+        self,
+        professional_client,
+        legal_active,
+        organization,
+        customer,
+        lawyer,
+        professional_user_and_employee,
     ):
         _user, own_employee = professional_user_and_employee
         LegalCase.objects.all_objects.create(
@@ -154,7 +160,9 @@ class TestLegalCaseApi:
         assert events_list.data["count"] == 3
 
     def test_transicion_invalida_devuelve_409(self, auth_client, legal_active, legal_case):
-        response = auth_client.post(reverse("legal-case-transition", args=[legal_case.id]), {"status": "archived"})
+        response = auth_client.post(
+            reverse("legal-case-transition", args=[legal_case.id]), {"status": "archived"}
+        )
         assert response.status_code == status.HTTP_409_CONFLICT
 
 

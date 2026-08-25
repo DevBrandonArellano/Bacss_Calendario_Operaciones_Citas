@@ -14,11 +14,11 @@ from decimal import Decimal
 from django.db import transaction
 
 from apps.modules.store.models import (
+    STOCK_RESERVED_STATUSES,
     Order,
     OrderItem,
     OrderStatus,
     ProductVariant,
-    STOCK_RESERVED_STATUSES,
 )
 from core import events
 from core import exceptions as domain_exceptions
@@ -78,13 +78,12 @@ class CreateOrderUseCase:
 
         variants: dict[str, ProductVariant] = {}
         for spec in request.items:
-            variant = variants.get(spec.product_variant_id) or ProductVariant.objects.filter(
-                id=spec.product_variant_id
-            ).first()
+            variant = (
+                variants.get(spec.product_variant_id)
+                or ProductVariant.objects.filter(id=spec.product_variant_id).first()
+            )
             if variant is None:
-                raise domain_exceptions.NotFoundError(
-                    f"La variante {spec.product_variant_id} no existe."
-                )
+                raise domain_exceptions.NotFoundError(f"La variante {spec.product_variant_id} no existe.")
             variants[spec.product_variant_id] = variant
 
         # Suma cantidades por variante repetida antes de validar stock, para
@@ -99,13 +98,12 @@ class CreateOrderUseCase:
             variant = variants[variant_id]
             if variant.stock < quantity:
                 raise domain_exceptions.ConflictError(
-                    f"Stock insuficiente para '{variant.sku}': disponible {variant.stock}, solicitado {quantity}."
+                    f"Stock insuficiente para '{variant.sku}': "
+                    f"disponible {variant.stock}, solicitado {quantity}."
                 )
 
         with transaction.atomic():
-            order = Order.objects.create(
-                organization=self.organization, customer=customer, branch=branch
-            )
+            order = Order.objects.create(organization=self.organization, customer=customer, branch=branch)
             total = Decimal("0")
             for spec in request.items:
                 variant = variants[spec.product_variant_id]

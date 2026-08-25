@@ -228,9 +228,7 @@ class TestBloqueos:
 
 
 class TestCitasExistentes:
-    def test_cita_activa_excluye_su_horario(
-        self, organization, branch, employee, service, customer, monday
-    ):
+    def test_cita_activa_excluye_su_horario(self, organization, branch, employee, service, customer, monday):
         Appointment.objects.all_objects.create(
             organization=organization,
             branch=branch,
@@ -254,9 +252,7 @@ class TestCitasExistentes:
             end_time=time(10, 30),
         )
 
-    def test_cita_cancelada_no_ocupa_agenda(
-        self, organization, branch, employee, service, customer, monday
-    ):
+    def test_cita_cancelada_no_ocupa_agenda(self, organization, branch, employee, service, customer, monday):
         Appointment.objects.all_objects.create(
             organization=organization,
             branch=branch,

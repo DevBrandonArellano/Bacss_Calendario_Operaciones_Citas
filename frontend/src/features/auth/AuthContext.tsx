@@ -1,22 +1,9 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { login as loginRequest, logout as logoutRequest } from "@/features/auth/api";
+import { AuthContext, type AuthContextValue } from "@/features/auth/useAuth";
 import { getMyOrganization } from "@/features/organizations/api";
 import { tokenStorage } from "@/lib/tokenStorage";
-
-interface AuthContextValue {
-  isAuthenticated: boolean;
-  /** Módulos especializados activos para la organización del usuario
-   * (docs/module-system.md). `false` mientras se resuelven, para que las
-   * pantallas guardadas por módulo no redirijan antes de tiempo. */
-  modulesLoaded: boolean;
-  activeModules: string[];
-  hasModule: (moduleCode: string) => boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => Boolean(tokenStorage.getAccess()));
@@ -81,8 +68,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth(): AuthContextValue {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth debe usarse dentro de <AuthProvider>.");
-  return context;
-}

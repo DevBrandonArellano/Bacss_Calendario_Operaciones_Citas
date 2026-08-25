@@ -103,7 +103,7 @@ class Appointment(TenantAwareModel, TimeStampedModel):
         ]
         constraints = [
             models.CheckConstraint(
-                check=Q(start_time__lt=models.F("end_time")), name="appointment_start_before_end"
+                condition=Q(start_time__lt=models.F("end_time")), name="appointment_start_before_end"
             ),
             ExclusionConstraint(
                 name="exclude_overlapping_active_appointments_per_employee",

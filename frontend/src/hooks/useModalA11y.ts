@@ -1,4 +1,4 @@
-import { useEffect, type RefObject } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea, input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -10,6 +10,14 @@ const FOCUSABLE_SELECTOR =
  * puede tabular hacia contenido oculto detrás del backdrop.
  */
 export function useModalA11y(containerRef: RefObject<HTMLElement>, onClose: () => void) {
+  // `onClose` suele recrearse en cada render del componente que abre el diálogo.
+  // Guardarlo en una ref permite que el efecto corra una sola vez por montaje:
+  // si dependiera de `onClose`, se re-suscribiría en cada render y capturaría
+  // como "foco previo" lo que estuviera enfocado en ese momento (el propio
+  // diálogo), rompiendo la devolución del foco al cerrar.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null;
 
@@ -22,7 +30,7 @@ export function useModalA11y(containerRef: RefObject<HTMLElement>, onClose: () =
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (event.key !== "Tab") return;
@@ -48,6 +56,5 @@ export function useModalA11y(containerRef: RefObject<HTMLElement>, onClose: () =
       document.removeEventListener("keydown", handleKeyDown);
       previouslyFocused?.focus();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [containerRef]);
 }

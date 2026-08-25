@@ -26,7 +26,9 @@ class Product(TenantAwareModel, TimeStampedModel):
     class Meta:
         ordering = ["name"]
         constraints = [
-            models.UniqueConstraint(fields=["organization", "sku"], name="unique_product_sku_per_organization")
+            models.UniqueConstraint(
+                fields=["organization", "sku"], name="unique_product_sku_per_organization"
+            )
         ]
 
     def __str__(self) -> str:
@@ -52,7 +54,9 @@ class ProductVariant(TenantAwareModel, TimeStampedModel):
     class Meta:
         ordering = ["sku"]
         constraints = [
-            models.UniqueConstraint(fields=["organization", "sku"], name="unique_variant_sku_per_organization")
+            models.UniqueConstraint(
+                fields=["organization", "sku"], name="unique_variant_sku_per_organization"
+            )
         ]
         indexes = [models.Index(fields=["organization", "product"])]
 
@@ -72,7 +76,9 @@ class Inventory(TenantAwareModel, TimeStampedModel):
     """
 
     branch = models.ForeignKey("branches.Branch", on_delete=models.PROTECT, related_name="+")
-    product_variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, related_name="inventory_records")
+    product_variant = models.ForeignKey(
+        ProductVariant, on_delete=models.CASCADE, related_name="inventory_records"
+    )
     quantity = models.IntegerField(default=0)
     last_counted_at = models.DateTimeField(null=True, blank=True)
 

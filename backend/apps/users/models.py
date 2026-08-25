@@ -48,9 +48,7 @@ class Role(TimeStampedModel):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=["organization", "code"], name="unique_role_code_per_organization"
-            )
+            models.UniqueConstraint(fields=["organization", "code"], name="unique_role_code_per_organization")
         ]
 
     def __str__(self) -> str:

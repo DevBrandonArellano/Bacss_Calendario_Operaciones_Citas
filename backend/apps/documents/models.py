@@ -19,7 +19,7 @@ class DocumentStatus(models.TextChoices):
     ARCHIVED = "archived", "Archivado"
 
 
-def document_upload_path(instance: "Document", filename: str) -> str:
+def document_upload_path(instance: Document, filename: str) -> str:
     return f"documents/{instance.organization_id}/{instance.owner_type}/{instance.owner_id}/{filename}"
 
 

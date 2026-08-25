@@ -99,7 +99,12 @@ class GlobalSearchView(APIView):
             qs = qs.filter(responsible_lawyer=employee) if employee else qs.none()
         matches = qs[:MAX_RESULTS_PER_TYPE]
         return [
-            {"type": "legal_case", "id": str(c.id), "label": f"{c.case_number} · {c.case_type}", "detail": c.status}
+            {
+                "type": "legal_case",
+                "id": str(c.id),
+                "label": f"{c.case_number} · {c.case_type}",
+                "detail": c.status,
+            }
             for c in matches
         ]
 
@@ -132,7 +137,8 @@ class GlobalSearchView(APIView):
         readable_owner_types = [
             owner_type
             for owner_type in readable_owner_types
-            if owner_type not in module_by_owner_type or organization.has_module_active(module_by_owner_type[owner_type])
+            if owner_type not in module_by_owner_type
+            or organization.has_module_active(module_by_owner_type[owner_type])
         ]
         if not readable_owner_types:
             return []

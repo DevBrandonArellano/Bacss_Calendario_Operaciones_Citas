@@ -1,6 +1,6 @@
 import pytest
 
-from apps.modules.store.models import Order, OrderStatus, ProductVariant
+from apps.modules.store.models import Order, OrderStatus
 from apps.modules.store.services import (
     CreateOrderRequest,
     CreateOrderUseCase,
@@ -61,7 +61,9 @@ class TestCreateOrder:
     def test_sin_items_lanza_validation_error(self, organization, customer, branch):
         use_case = CreateOrderUseCase(organization=organization)
         with pytest.raises(domain_exceptions.ValidationError):
-            use_case.execute(CreateOrderRequest(customer_id=str(customer.id), branch_id=str(branch.id), items=[]))
+            use_case.execute(
+                CreateOrderRequest(customer_id=str(customer.id), branch_id=str(branch.id), items=[])
+            )
 
 
 class TestTransitionOrder:
@@ -94,7 +96,13 @@ class TestTransitionOrder:
                 items=[OrderItemSpec(product_variant_id=str(variant.id), quantity=4)],
             )
         )
-        for status in [OrderStatus.CONFIRMED, OrderStatus.PAID, OrderStatus.PREPARING, OrderStatus.READY, OrderStatus.DELIVERED]:
+        for status in [
+            OrderStatus.CONFIRMED,
+            OrderStatus.PAID,
+            OrderStatus.PREPARING,
+            OrderStatus.READY,
+            OrderStatus.DELIVERED,
+        ]:
             TransitionOrderUseCase().execute(order, status)
 
         variant.refresh_from_db()

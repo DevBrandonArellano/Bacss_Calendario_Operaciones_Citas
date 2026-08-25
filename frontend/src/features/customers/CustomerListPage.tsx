@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { ConfirmDialog } from "@/components/ConfirmDialog";
@@ -22,7 +22,7 @@ export function CustomerListPage() {
   const [error, setError] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Customer | null>(null);
 
-  async function fetchCustomers() {
+  const fetchCustomers = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -39,12 +39,11 @@ export function CustomerListPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [page, ordering, status, query]);
 
   useEffect(() => {
     fetchCustomers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, status, ordering, query]);
+  }, [fetchCustomers]);
 
   async function handleConfirmDelete() {
     if (!pendingDelete) return;
