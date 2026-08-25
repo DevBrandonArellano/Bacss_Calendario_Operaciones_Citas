@@ -5,7 +5,7 @@ from django.http import HttpRequest, HttpResponse
 from core.context import (
     new_correlation_id,
     set_correlation_id,
-    set_current_organization_id,
+    tenant_scope,
 )
 
 CORRELATION_ID_HEADER = "X-Request-Id"
@@ -48,8 +48,14 @@ class CurrentOrganizationMiddleware:
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
         organization_id = self._resolve_organization_id(request)
-        set_current_organization_id(organization_id)
-        return self.get_response(request)
+        # Usa `tenant_scope` (no un `set` suelto) para que el contexto se
+        # restaure al valor anterior siempre al salir, incluso si la vista
+        # lanza una excepción — de lo contrario el tenant de una request
+        # queda fijado en el `ContextVar` y se filtra a lo próximo que
+        # corra en el mismo hilo (p. ej. el siguiente test en la misma
+        # suite, que no pasa por este middleware).
+        with tenant_scope(organization_id):
+            return self.get_response(request)
 
     @staticmethod
     def _resolve_organization_id(request: HttpRequest) -> str | None:

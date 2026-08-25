@@ -13,7 +13,7 @@ def test_create_customer_assigns_organization_from_authenticated_user(auth_clien
     )
 
     assert response.status_code == status.HTTP_201_CREATED
-    customer = Customer.objects.all_objects.get(id=response.data["id"])
+    customer = Customer.all_objects.get(id=response.data["id"])
     assert customer.organization_id == organization.id
 
 
@@ -24,13 +24,13 @@ def test_create_customer_ignores_organization_sent_in_body(auth_client, organiza
         format="json",
     )
 
-    customer = Customer.objects.all_objects.get(id=response.data["id"])
+    customer = Customer.all_objects.get(id=response.data["id"])
     assert customer.organization_id == organization.id
 
 
 def test_list_customers_never_returns_other_organization_data(auth_client, organization, other_organization):
-    Customer.objects.all_objects.create(organization=organization, first_name="Propio", last_name="Cliente")
-    Customer.objects.all_objects.create(
+    Customer.all_objects.create(organization=organization, first_name="Propio", last_name="Cliente")
+    Customer.all_objects.create(
         organization=other_organization, first_name="Ajeno", last_name="Cliente"
     )
 
@@ -41,7 +41,7 @@ def test_list_customers_never_returns_other_organization_data(auth_client, organ
 
 
 def test_update_customer(auth_client, organization):
-    customer = Customer.objects.all_objects.create(
+    customer = Customer.all_objects.create(
         organization=organization, first_name="Ana", last_name="Pérez"
     )
 
@@ -55,25 +55,25 @@ def test_update_customer(auth_client, organization):
 
 
 def test_delete_customer(auth_client, organization):
-    customer = Customer.objects.all_objects.create(
+    customer = Customer.all_objects.create(
         organization=organization, first_name="Ana", last_name="Pérez"
     )
 
     response = auth_client.delete(reverse("customer-detail", args=[customer.id]))
 
     assert response.status_code == status.HTTP_204_NO_CONTENT
-    assert not Customer.objects.all_objects.filter(id=customer.id).exists()
+    assert not Customer.all_objects.filter(id=customer.id).exists()
 
 
 def test_cannot_delete_customer_of_other_organization(auth_client, other_organization):
-    foreign = Customer.objects.all_objects.create(
+    foreign = Customer.all_objects.create(
         organization=other_organization, first_name="Ajeno", last_name="Cliente"
     )
 
     response = auth_client.delete(reverse("customer-detail", args=[foreign.id]))
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert Customer.objects.all_objects.filter(id=foreign.id).exists()
+    assert Customer.all_objects.filter(id=foreign.id).exists()
 
 
 @pytest.mark.parametrize(
@@ -86,10 +86,10 @@ def test_cannot_delete_customer_of_other_organization(auth_client, other_organiz
     ],
 )
 def test_search_matches_name_document_phone_and_email(auth_client, organization, query, expected_names):
-    Customer.objects.all_objects.create(
+    Customer.all_objects.create(
         organization=organization, first_name="Ana", last_name="Perez", phone="0999999999"
     )
-    Customer.objects.all_objects.create(
+    Customer.all_objects.create(
         organization=organization, first_name="Bruno", last_name="Perez", phone="0888888888"
     )
 
@@ -100,8 +100,8 @@ def test_search_matches_name_document_phone_and_email(auth_client, organization,
 
 
 def test_search_never_returns_other_organization_data(auth_client, organization, other_organization):
-    Customer.objects.all_objects.create(organization=organization, first_name="Ana", last_name="Perez")
-    Customer.objects.all_objects.create(organization=other_organization, first_name="Ana", last_name="Ajena")
+    Customer.all_objects.create(organization=organization, first_name="Ana", last_name="Perez")
+    Customer.all_objects.create(organization=other_organization, first_name="Ana", last_name="Ajena")
 
     response = auth_client.get(reverse("customer-search"), {"q": "Ana"})
 
@@ -110,7 +110,7 @@ def test_search_never_returns_other_organization_data(auth_client, organization,
 
 
 def test_history_endpoint_returns_customer_summary(auth_client, organization):
-    customer = Customer.objects.all_objects.create(
+    customer = Customer.all_objects.create(
         organization=organization, first_name="Ana", last_name="Perez"
     )
 
@@ -122,7 +122,7 @@ def test_history_endpoint_returns_customer_summary(auth_client, organization):
 
 
 def test_history_of_foreign_customer_returns_404(auth_client, other_organization):
-    foreign = Customer.objects.all_objects.create(
+    foreign = Customer.all_objects.create(
         organization=other_organization, first_name="Ana", last_name="Ajena"
     )
 

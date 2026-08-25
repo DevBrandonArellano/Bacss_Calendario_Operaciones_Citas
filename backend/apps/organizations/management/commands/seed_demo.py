@@ -58,7 +58,7 @@ def _next_monday() -> date:
 
 def _seed_schedules_and_appointments(*, organization, branch, employees, services, customers):
     for weekday in _BUSINESS_WEEKDAYS:
-        Schedule.objects.all_objects.create(
+        Schedule.all_objects.create(
             organization=organization,
             branch=branch,
             weekday=weekday,
@@ -66,7 +66,7 @@ def _seed_schedules_and_appointments(*, organization, branch, employees, service
             end_time=time(18, 0),
         )
         for employee in employees:
-            Schedule.objects.all_objects.create(
+            Schedule.all_objects.create(
                 organization=organization,
                 employee=employee,
                 weekday=weekday,
@@ -111,7 +111,7 @@ def _seed_motorcycles_and_work_order(*, organization, customers):
     `moto` activo (Motors Ecuador)."""
 
     motorcycles = [
-        Motorcycle.objects.all_objects.create(
+        Motorcycle.all_objects.create(
             organization=organization,
             customer=customers[0],
             plate="PBA-1234",
@@ -120,7 +120,7 @@ def _seed_motorcycles_and_work_order(*, organization, customers):
             year=2022,
             mileage=8500,
         ),
-        Motorcycle.objects.all_objects.create(
+        Motorcycle.all_objects.create(
             organization=organization,
             customer=customers[1],
             plate="PBB-5678",
@@ -163,14 +163,14 @@ def _seed_lab_order(*, organization, customers):
     mostrar el estado agregado del pedido (el cuello de botella)."""
 
     patients = [
-        Patient.objects.all_objects.create(
+        Patient.all_objects.create(
             organization=organization,
             customer=customers[0],
             first_name=customers[0].first_name,
             last_name=customers[0].last_name,
             document_number=customers[0].document_number,
         ),
-        Patient.objects.all_objects.create(
+        Patient.all_objects.create(
             organization=organization, first_name="Paciente", last_name="Sin cuenta"
         ),
     ]
@@ -212,10 +212,10 @@ def _seed_store_catalog(*, organization, branch, customers):
     inventario por sucursal, un lanzamiento próximo y un pedido confirmado
     para mostrar el descuento de stock del motor de pedidos."""
 
-    shirt = Product.objects.all_objects.create(
+    shirt = Product.all_objects.create(
         organization=organization, sku="CAM-001", name="Camiseta UrbanStore", category="Ropa", price="20.00"
     )
-    cap = Product.objects.all_objects.create(
+    cap = Product.all_objects.create(
         organization=organization,
         sku="GOR-001",
         name="Gorra UrbanStore",
@@ -223,18 +223,18 @@ def _seed_store_catalog(*, organization, branch, customers):
         price="12.00",
     )
     shirt_variants = [
-        ProductVariant.objects.all_objects.create(
+        ProductVariant.all_objects.create(
             organization=organization, product=shirt, sku="CAM-001-S", attributes={"talla": "S"}, stock=15
         ),
-        ProductVariant.objects.all_objects.create(
+        ProductVariant.all_objects.create(
             organization=organization, product=shirt, sku="CAM-001-M", attributes={"talla": "M"}, stock=20
         ),
     ]
-    cap_variant = ProductVariant.objects.all_objects.create(
+    cap_variant = ProductVariant.all_objects.create(
         organization=organization, product=cap, sku="GOR-001-U", attributes={"talla": "única"}, stock=10
     )
 
-    Inventory.objects.all_objects.create(
+    Inventory.all_objects.create(
         organization=organization,
         branch=branch,
         product_variant=shirt_variants[1],
@@ -242,7 +242,7 @@ def _seed_store_catalog(*, organization, branch, customers):
         last_counted_at=timezone.now(),
     )
 
-    ProductLaunch.objects.all_objects.create(
+    ProductLaunch.all_objects.create(
         organization=organization,
         name="Colección Verano",
         launch_at=timezone.now() + timedelta(days=14),
@@ -283,13 +283,13 @@ def _seed_legal_cases(*, organization, customers, lawyer, admin_user):
     TransitionLegalCaseUseCase(actor_user=admin_user).execute(active_case, "in_review")
     TransitionLegalCaseUseCase(actor_user=admin_user).execute(active_case, "active")
 
-    Hearing.objects.all_objects.create(
+    Hearing.all_objects.create(
         organization=organization,
         legal_case=active_case,
         scheduled_at=timezone.now() + timedelta(days=10),
         location="Juzgado Civil No. 3",
     )
-    CaseTask.objects.all_objects.create(
+    CaseTask.all_objects.create(
         organization=organization,
         legal_case=active_case,
         title="Preparar alegato de apertura",
@@ -373,7 +373,7 @@ class Command(BaseCommand):
         )
         if created:
             ModuleActivation.objects.create(organization=motors, module_code=ModuleCode.MOTO)
-            branch = Branch.objects.all_objects.create(organization=motors, name="Sucursal Norte")
+            branch = Branch.all_objects.create(organization=motors, name="Sucursal Norte")
             admin = User.objects.create_user(
                 organization=motors,
                 email="admin@motorsecuador.demo",
@@ -383,14 +383,14 @@ class Command(BaseCommand):
             )
             admin.roles.add(admin_role)
             customers = [
-                Customer.objects.all_objects.create(organization=motors, **data) for data in _MOTORS_CUSTOMERS
+                Customer.all_objects.create(organization=motors, **data) for data in _MOTORS_CUSTOMERS
             ]
             services = [
-                Service.objects.all_objects.create(organization=motors, **data) for data in _MOTORS_SERVICES
+                Service.all_objects.create(organization=motors, **data) for data in _MOTORS_SERVICES
             ]
             employees = []
             for data in _MOTORS_EMPLOYEES:
-                employee = Employee.objects.all_objects.create(organization=motors, branch=branch, **data)
+                employee = Employee.all_objects.create(organization=motors, branch=branch, **data)
                 employee.services.set(services)
                 employees.append(employee)
             _seed_schedules_and_appointments(
@@ -410,7 +410,7 @@ class Command(BaseCommand):
         )
         if created:
             ModuleActivation.objects.create(organization=labx, module_code=ModuleCode.LABORATORY)
-            branch = Branch.objects.all_objects.create(organization=labx, name="Sede Principal")
+            branch = Branch.all_objects.create(organization=labx, name="Sede Principal")
             admin = User.objects.create_user(
                 organization=labx,
                 email="admin@laboratorioabc.demo",
@@ -420,14 +420,14 @@ class Command(BaseCommand):
             )
             admin.roles.add(admin_role)
             customers = [
-                Customer.objects.all_objects.create(organization=labx, **data) for data in _LABX_CUSTOMERS
+                Customer.all_objects.create(organization=labx, **data) for data in _LABX_CUSTOMERS
             ]
             services = [
-                Service.objects.all_objects.create(organization=labx, **data) for data in _LABX_SERVICES
+                Service.all_objects.create(organization=labx, **data) for data in _LABX_SERVICES
             ]
             employees = []
             for data in _LABX_EMPLOYEES:
-                employee = Employee.objects.all_objects.create(organization=labx, branch=branch, **data)
+                employee = Employee.all_objects.create(organization=labx, branch=branch, **data)
                 employee.services.set(services)
                 employees.append(employee)
             _seed_schedules_and_appointments(
@@ -447,7 +447,7 @@ class Command(BaseCommand):
         )
         if created:
             ModuleActivation.objects.create(organization=urbanstore, module_code=ModuleCode.STORE)
-            branch = Branch.objects.all_objects.create(organization=urbanstore, name="Local Centro")
+            branch = Branch.all_objects.create(organization=urbanstore, name="Local Centro")
             admin = User.objects.create_user(
                 organization=urbanstore,
                 email="admin@urbanstore.demo",
@@ -457,7 +457,7 @@ class Command(BaseCommand):
             )
             admin.roles.add(admin_role)
             customers = [
-                Customer.objects.all_objects.create(organization=urbanstore, **data)
+                Customer.all_objects.create(organization=urbanstore, **data)
                 for data in _URBANSTORE_CUSTOMERS
             ]
             _seed_store_catalog(organization=urbanstore, branch=branch, customers=customers)
@@ -470,7 +470,7 @@ class Command(BaseCommand):
         )
         if created:
             ModuleActivation.objects.create(organization=legalxyz, module_code=ModuleCode.LEGAL)
-            branch = Branch.objects.all_objects.create(organization=legalxyz, name="Oficina Central")
+            branch = Branch.all_objects.create(organization=legalxyz, name="Oficina Central")
             admin = User.objects.create_user(
                 organization=legalxyz,
                 email="admin@estudioxyz.demo",
@@ -480,10 +480,10 @@ class Command(BaseCommand):
             )
             admin.roles.add(admin_role)
             customers = [
-                Customer.objects.all_objects.create(organization=legalxyz, **data)
+                Customer.all_objects.create(organization=legalxyz, **data)
                 for data in _LEGALXYZ_CUSTOMERS
             ]
-            lawyer = Employee.objects.all_objects.create(
+            lawyer = Employee.all_objects.create(
                 organization=legalxyz, branch=branch, first_name="Marco", last_name="Abogado"
             )
             _seed_legal_cases(organization=legalxyz, customers=customers, lawyer=lawyer, admin_user=admin)

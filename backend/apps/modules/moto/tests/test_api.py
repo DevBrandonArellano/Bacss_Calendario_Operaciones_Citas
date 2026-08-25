@@ -35,16 +35,16 @@ class TestMotorcycleApi:
         )
 
         assert response.status_code == status.HTTP_201_CREATED
-        motorcycle = Motorcycle.objects.all_objects.get(id=response.data["id"])
+        motorcycle = Motorcycle.all_objects.get(id=response.data["id"])
         assert motorcycle.organization_id == organization.id
 
     def test_aislamiento_por_tenant(self, auth_client, moto_active, other_organization):
         from apps.customers.models import Customer
 
-        other_customer = Customer.objects.all_objects.create(
+        other_customer = Customer.all_objects.create(
             organization=other_organization, first_name="Otro", last_name="Cliente"
         )
-        Motorcycle.objects.all_objects.create(
+        Motorcycle.all_objects.create(
             organization=other_organization,
             customer=other_customer,
             plate="ZZZ-999",
@@ -78,7 +78,7 @@ class TestWorkOrderApi:
         assert response.data["status"] == WorkOrderStatus.RECEIVED
 
     def test_transicion_via_api(self, auth_client, moto_active, organization, motorcycle):
-        work_order = WorkOrder.objects.all_objects.create(organization=organization, motorcycle=motorcycle)
+        work_order = WorkOrder.all_objects.create(organization=organization, motorcycle=motorcycle)
 
         response = auth_client.post(
             reverse("work-order-transition", args=[work_order.id]), {"status": WorkOrderStatus.DIAGNOSIS}
@@ -88,7 +88,7 @@ class TestWorkOrderApi:
         assert response.data["status"] == WorkOrderStatus.DIAGNOSIS
 
     def test_transicion_invalida_devuelve_409(self, auth_client, moto_active, organization, motorcycle):
-        work_order = WorkOrder.objects.all_objects.create(organization=organization, motorcycle=motorcycle)
+        work_order = WorkOrder.all_objects.create(organization=organization, motorcycle=motorcycle)
 
         response = auth_client.post(
             reverse("work-order-transition", args=[work_order.id]), {"status": WorkOrderStatus.DELIVERED}
@@ -97,7 +97,7 @@ class TestWorkOrderApi:
         assert response.status_code == status.HTTP_409_CONFLICT
 
     def test_agrega_item_y_recalcula_total(self, auth_client, moto_active, organization, motorcycle):
-        work_order = WorkOrder.objects.all_objects.create(organization=organization, motorcycle=motorcycle)
+        work_order = WorkOrder.all_objects.create(organization=organization, motorcycle=motorcycle)
 
         response = auth_client.post(
             reverse("work-order-items", args=[work_order.id]),

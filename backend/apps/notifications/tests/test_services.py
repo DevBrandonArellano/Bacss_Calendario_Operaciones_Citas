@@ -133,7 +133,7 @@ class TestCreateNotificationUseCaseEmail:
 
 class TestMarkAsRead:
     def test_marca_leida_y_registra_fecha(self, organization, customer):
-        notification = Notification.objects.all_objects.create(
+        notification = Notification.all_objects.create(
             organization=organization,
             customer=customer,
             channel=NotificationChannel.INTERNAL,

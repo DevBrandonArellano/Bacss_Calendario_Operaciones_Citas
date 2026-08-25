@@ -20,7 +20,14 @@ from core.context import tenant_scope
 
 
 def _recompute_work_order_total(work_order: WorkOrder) -> None:
-    total = sum((item.subtotal for item in work_order.items.all()), Decimal("0"))
+    # No usar `work_order.items.all()`: si `work_order` vino de una
+    # queryset con `.prefetch_related("items")` (como
+    # `WorkOrderViewSet.get_queryset`), el manager de la relación devuelve
+    # el cache del prefetch (tomado antes de crear este ítem nuevo), no una
+    # consulta fresca — el total quedaría calculado sobre una lista vieja.
+    total = sum(
+        (item.subtotal for item in WorkOrderItem.objects.filter(work_order=work_order)), Decimal("0")
+    )
     if work_order.total != total:
         work_order.total = total
         work_order.save(update_fields=["total", "updated_at"])

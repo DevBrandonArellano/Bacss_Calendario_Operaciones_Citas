@@ -35,7 +35,11 @@ class Document(TenantAwareModel, TimeStampedModel):
     owner_type = models.CharField(max_length=20, choices=DocumentOwnerType.choices)
     owner_id = models.UUIDField()
     name = models.CharField(max_length=255)
-    file = models.FileField(upload_to=document_upload_path)
+    # `upload_to` ya usa dos UUIDs (org + owner) en la ruta: con el
+    # `max_length` por defecto (100), cualquier nombre de archivo real supera
+    # el límite y `Storage.get_available_name()` nunca encuentra un nombre
+    # disponible al desambiguar colisiones (`SuspiciousFileOperation`).
+    file = models.FileField(upload_to=document_upload_path, max_length=500)
     file_type = models.CharField(max_length=100, blank=True)
     size_bytes = models.PositiveIntegerField(default=0)
     version = models.PositiveIntegerField(default=1)

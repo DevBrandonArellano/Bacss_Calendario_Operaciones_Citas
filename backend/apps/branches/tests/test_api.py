@@ -13,7 +13,7 @@ def test_create_branch_assigns_organization_from_authenticated_user(auth_client,
     response = auth_client.post(url, {"name": "Sucursal Norte"}, format="json")
 
     assert response.status_code == status.HTTP_201_CREATED
-    branch = Branch.objects.all_objects.get(id=response.data["id"])
+    branch = Branch.all_objects.get(id=response.data["id"])
     assert branch.organization_id == organization.id
 
 
@@ -25,13 +25,13 @@ def test_create_branch_ignores_organization_id_sent_in_body(auth_client, organiz
     )
 
     assert response.status_code == status.HTTP_201_CREATED
-    branch = Branch.objects.all_objects.get(id=response.data["id"])
+    branch = Branch.all_objects.get(id=response.data["id"])
     assert branch.organization_id == organization.id  # nunca el de other_organization
 
 
 def test_list_branches_never_returns_other_organization_data(auth_client, organization, other_organization):
-    Branch.objects.all_objects.create(organization=organization, name="Sucursal propia")
-    Branch.objects.all_objects.create(organization=other_organization, name="Sucursal ajena")
+    Branch.all_objects.create(organization=organization, name="Sucursal propia")
+    Branch.all_objects.create(organization=other_organization, name="Sucursal ajena")
 
     response = auth_client.get(reverse("branch-list"))
 
@@ -40,7 +40,7 @@ def test_list_branches_never_returns_other_organization_data(auth_client, organi
 
 
 def test_retrieve_branch_of_other_organization_returns_404_not_403(auth_client, other_organization):
-    foreign_branch = Branch.objects.all_objects.create(organization=other_organization, name="Ajena")
+    foreign_branch = Branch.all_objects.create(organization=other_organization, name="Ajena")
 
     response = auth_client.get(reverse("branch-detail", args=[foreign_branch.id]))
 

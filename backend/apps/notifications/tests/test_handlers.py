@@ -1,4 +1,4 @@
-from datetime import date, time, timedelta
+from datetime import time
 
 import pytest
 from django.core import mail
@@ -11,7 +11,7 @@ pytestmark = pytest.mark.django_db
 
 class TestAppointmentEventHandlers:
     def test_cita_creada_y_confirmada_notifica_al_profesional_y_al_cliente(
-        self, organization, branch, service, employee, employee_user, customer
+        self, organization, branch, service, employee, employee_user, customer, monday
     ):
         use_case = CreateAppointmentUseCase(organization=organization)
         appointment = use_case.execute(
@@ -20,12 +20,12 @@ class TestAppointmentEventHandlers:
                 service_id=str(service.id),
                 employee_id=str(employee.id),
                 branch_id=str(branch.id),
-                appointment_date=date.today() + timedelta(days=3),
+                appointment_date=monday,
                 start_time=time(14, 0),
             )
         )
 
-        internal_notifications = Notification.objects.all_objects.filter(
+        internal_notifications = Notification.all_objects.filter(
             recipient_user=employee_user, channel=NotificationChannel.INTERNAL
         )
         # requires_confirmation=False -> nace CONFIRMED: se emiten
@@ -41,7 +41,7 @@ class TestAppointmentEventHandlers:
         assert appointment.status == "confirmed"
 
     def test_sin_email_de_cliente_no_intenta_enviar_correo(
-        self, organization, branch, service, employee, employee_user, customer
+        self, organization, branch, service, employee, employee_user, customer, monday
     ):
         customer.email = ""
         customer.save(update_fields=["email"])
@@ -53,10 +53,10 @@ class TestAppointmentEventHandlers:
                 service_id=str(service.id),
                 employee_id=str(employee.id),
                 branch_id=str(branch.id),
-                appointment_date=date.today() + timedelta(days=4),
+                appointment_date=monday,
                 start_time=time(15, 0),
             )
         )
 
         assert len(mail.outbox) == 0
-        assert Notification.objects.all_objects.filter(recipient_user=employee_user).exists()
+        assert Notification.all_objects.filter(recipient_user=employee_user).exists()

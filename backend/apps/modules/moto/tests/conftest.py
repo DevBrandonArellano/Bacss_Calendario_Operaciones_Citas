@@ -12,13 +12,13 @@ def moto_active(organization):
 
 @pytest.fixture
 def customer(organization):
-    return Customer.objects.all_objects.create(
+    return Customer.all_objects.create(
         organization=organization, first_name="Cliente", last_name="Uno"
     )
 
 
 @pytest.fixture
 def motorcycle(organization, customer):
-    return Motorcycle.objects.all_objects.create(
+    return Motorcycle.all_objects.create(
         organization=organization, customer=customer, plate="ABC-123", brand="Yamaha", model="FZ"
     )

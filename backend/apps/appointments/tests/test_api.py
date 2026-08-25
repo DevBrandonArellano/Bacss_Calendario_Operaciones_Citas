@@ -33,7 +33,7 @@ def test_create_appointment_via_api(auth_client, organization, customer, service
     )
 
     assert response.status_code == status.HTTP_201_CREATED
-    appointment = Appointment.objects.all_objects.get(id=response.data["id"])
+    appointment = Appointment.all_objects.get(id=response.data["id"])
     assert appointment.organization_id == organization.id
     assert appointment.status == AppointmentStatus.CONFIRMED
 
@@ -64,17 +64,17 @@ def test_list_appointments_never_returns_other_organization_data(
         format="json",
     )
 
-    other_branch = Branch.objects.all_objects.create(organization=other_organization, name="Ajena")
-    other_customer = Customer.objects.all_objects.create(
+    other_branch = Branch.all_objects.create(organization=other_organization, name="Ajena")
+    other_customer = Customer.all_objects.create(
         organization=other_organization, first_name="Ajeno", last_name="Cliente"
     )
-    other_service = Service.objects.all_objects.create(
+    other_service = Service.all_objects.create(
         organization=other_organization, name="Ajeno", duration_minutes=30, price="1.00"
     )
-    other_employee = Employee.objects.all_objects.create(
+    other_employee = Employee.all_objects.create(
         organization=other_organization, branch=other_branch, first_name="Ajeno", last_name="Prof"
     )
-    Appointment.objects.all_objects.create(
+    Appointment.all_objects.create(
         organization=other_organization,
         branch=other_branch,
         customer=other_customer,

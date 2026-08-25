@@ -20,6 +20,7 @@ from django.db.models import Q
 from apps.appointments.models import ACTIVE_APPOINTMENT_STATUSES, Appointment
 from apps.scheduling.models import AvailabilityBlock, Schedule
 from apps.services.models import Employee
+from core.context import tenant_scope
 
 DEFAULT_SLOT_STEP_MINUTES = 15
 
@@ -172,41 +173,52 @@ def get_available_slots(
     """
     weekday = target_date.weekday()
 
-    employee_ids: list[str]
-    if employee_id is not None:
-        employee_ids = [employee_id]
-    else:
-        employee_ids = list(
-            Employee.objects.filter(organization_id=organization_id, is_active=True)
-            .filter(_branch_matches_q(branch_id))
-            .values_list("id", flat=True)
-        )
-
-    all_slots: list[Slot] = []
-    for emp_id in employee_ids:
-        working = _working_intervals_for_day(
-            organization_id=organization_id, branch_id=branch_id, employee_id=emp_id, weekday=weekday
-        )
-        blocks = _blocks_for_day(
-            organization_id=organization_id, branch_id=branch_id, employee_id=emp_id, target_date=target_date
-        )
-        free = _subtract_all(working, blocks)
-        booked = _booked_intervals_for_day(
-            organization_id=organization_id,
-            employee_id=emp_id,
-            target_date=target_date,
-            exclude_appointment_id=exclude_appointment_id,
-        )
-        free = _subtract_all(free, booked)
-        all_slots.extend(
-            _generate_slots(
-                free_intervals=free,
-                duration_minutes=service_duration_minutes,
-                step_minutes=slot_step_minutes,
-                employee_id=emp_id,
+    # `Schedule`/`AvailabilityBlock`/`Appointment`/`Employee` usan el manager
+    # tenant-aware por defecto (`objects`), que solo resuelve filas con un
+    # tenant fijado en el contexto (`core/context.py`). Esta función es
+    # "pura" y se documenta como segura de llamar desde cualquier canal —
+    # incluido fuera de una request HTTP, donde nada más fija ese contexto —
+    # así que lo fija ella misma con el `organization_id` explícito que ya
+    # recibe (el mismo patrón que `CreateAppointmentUseCase.execute`).
+    with tenant_scope(organization_id):
+        employee_ids: list[str]
+        if employee_id is not None:
+            employee_ids = [employee_id]
+        else:
+            employee_ids = list(
+                Employee.objects.filter(organization_id=organization_id, is_active=True)
+                .filter(_branch_matches_q(branch_id))
+                .values_list("id", flat=True)
             )
-        )
-    return all_slots
+
+        all_slots: list[Slot] = []
+        for emp_id in employee_ids:
+            working = _working_intervals_for_day(
+                organization_id=organization_id, branch_id=branch_id, employee_id=emp_id, weekday=weekday
+            )
+            blocks = _blocks_for_day(
+                organization_id=organization_id,
+                branch_id=branch_id,
+                employee_id=emp_id,
+                target_date=target_date,
+            )
+            free = _subtract_all(working, blocks)
+            booked = _booked_intervals_for_day(
+                organization_id=organization_id,
+                employee_id=emp_id,
+                target_date=target_date,
+                exclude_appointment_id=exclude_appointment_id,
+            )
+            free = _subtract_all(free, booked)
+            all_slots.extend(
+                _generate_slots(
+                    free_intervals=free,
+                    duration_minutes=service_duration_minutes,
+                    step_minutes=slot_step_minutes,
+                    employee_id=emp_id,
+                )
+            )
+        return all_slots
 
 
 def is_slot_free(
@@ -224,19 +236,25 @@ def is_slot_free(
     requested_end = _time_to_minutes(end_time)
     weekday = target_date.weekday()
 
-    working = _working_intervals_for_day(
-        organization_id=organization_id, branch_id=branch_id, employee_id=employee_id, weekday=weekday
-    )
-    blocks = _blocks_for_day(
-        organization_id=organization_id, branch_id=branch_id, employee_id=employee_id, target_date=target_date
-    )
-    free = _subtract_all(working, blocks)
-    booked = _booked_intervals_for_day(
-        organization_id=organization_id,
-        employee_id=employee_id,
-        target_date=target_date,
-        exclude_appointment_id=exclude_appointment_id,
-    )
-    free = _subtract_all(free, booked)
+    # Ver comentario en `get_available_slots`: fija su propio tenant scope
+    # para poder llamarse de forma segura fuera de una request HTTP.
+    with tenant_scope(organization_id):
+        working = _working_intervals_for_day(
+            organization_id=organization_id, branch_id=branch_id, employee_id=employee_id, weekday=weekday
+        )
+        blocks = _blocks_for_day(
+            organization_id=organization_id,
+            branch_id=branch_id,
+            employee_id=employee_id,
+            target_date=target_date,
+        )
+        free = _subtract_all(working, blocks)
+        booked = _booked_intervals_for_day(
+            organization_id=organization_id,
+            employee_id=employee_id,
+            target_date=target_date,
+            exclude_appointment_id=exclude_appointment_id,
+        )
+        free = _subtract_all(free, booked)
 
-    return any(start <= requested_start and requested_end <= end for start, end in free)
+        return any(start <= requested_start and requested_end <= end for start, end in free)

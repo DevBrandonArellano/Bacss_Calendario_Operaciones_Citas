@@ -10,19 +10,19 @@ from apps.services.models import Employee, Service
 
 @pytest.fixture
 def branch(organization):
-    return Branch.objects.all_objects.create(organization=organization, name="Sucursal Norte")
+    return Branch.all_objects.create(organization=organization, name="Sucursal Norte")
 
 
 @pytest.fixture
 def service(organization):
-    return Service.objects.all_objects.create(
+    return Service.all_objects.create(
         organization=organization, name="Corte", duration_minutes=30, price="50.00"
     )
 
 
 @pytest.fixture
 def employee(organization, branch, service):
-    emp = Employee.objects.all_objects.create(
+    emp = Employee.all_objects.create(
         organization=organization, branch=branch, first_name="Ana", last_name="Prof"
     )
     emp.services.add(service)
@@ -31,7 +31,7 @@ def employee(organization, branch, service):
 
 @pytest.fixture
 def customer(organization):
-    return Customer.objects.all_objects.create(
+    return Customer.all_objects.create(
         organization=organization, first_name="Cliente", last_name="Uno", email="cliente@test.com"
     )
 
@@ -39,7 +39,7 @@ def customer(organization):
 @pytest.fixture
 def appointment(organization, branch, service, employee, customer):
     target_date = date.today() + timedelta(days=1)
-    return Appointment.objects.all_objects.create(
+    return Appointment.all_objects.create(
         organization=organization,
         branch=branch,
         customer=customer,

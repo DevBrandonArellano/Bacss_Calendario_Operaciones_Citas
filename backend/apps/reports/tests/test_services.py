@@ -13,7 +13,7 @@ def professional_user(organization, branch, system_roles, make_user):
     from apps.services.models import Employee
 
     user = make_user(organization, "profesional@motorsecuador.test", roles=["professional"])
-    employee = Employee.objects.all_objects.create(
+    employee = Employee.all_objects.create(
         organization=organization, branch=branch, user=user, first_name="Pro", last_name="Fesional"
     )
     return user, employee

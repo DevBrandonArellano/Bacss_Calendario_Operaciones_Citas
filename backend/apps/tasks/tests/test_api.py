@@ -24,7 +24,7 @@ class TestCreateTask:
             format="json",
         )
         assert response.status_code == status.HTTP_201_CREATED
-        task = Task.objects.all_objects.get(id=response.data["id"])
+        task = Task.all_objects.get(id=response.data["id"])
         assert task.organization_id == organization.id
         assert task.status == "pending"
 
@@ -53,14 +53,14 @@ class TestListTasks:
         assert response.data["count"] == 1
 
     def test_sin_filtro_devuelve_bandeja_personal(self, auth_client, org_admin_user, customer):
-        Task.objects.all_objects.create(
+        Task.all_objects.create(
             organization=org_admin_user.organization,
             owner_type="customer",
             owner_id=customer.id,
             title="Asignada a mí",
             assigned_to_user=org_admin_user,
         )
-        Task.objects.all_objects.create(
+        Task.all_objects.create(
             organization=org_admin_user.organization,
             owner_type="customer",
             owner_id=customer.id,

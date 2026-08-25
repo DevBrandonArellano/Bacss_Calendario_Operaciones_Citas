@@ -22,7 +22,7 @@ class TestCreatePaymentApi:
         )
 
         assert response.status_code == status.HTTP_201_CREATED
-        payment = Payment.objects.all_objects.get(id=response.data["id"])
+        payment = Payment.all_objects.get(id=response.data["id"])
         assert payment.organization_id == organization.id
         assert payment.status == PaymentStatus.PAID
         appointment.refresh_from_db()
@@ -71,10 +71,10 @@ class TestRefundPaymentApi:
     ):
         from apps.customers.models import Customer
 
-        other_customer = Customer.objects.all_objects.create(
+        other_customer = Customer.all_objects.create(
             organization=other_organization, first_name="Otra", last_name="Empresa"
         )
-        payment = Payment.objects.all_objects.create(
+        payment = Payment.all_objects.create(
             organization=other_organization,
             customer=other_customer,
             amount="10.00",

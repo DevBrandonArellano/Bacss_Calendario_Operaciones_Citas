@@ -13,25 +13,25 @@ def store_active(organization):
 
 @pytest.fixture
 def branch(organization):
-    return Branch.objects.all_objects.create(organization=organization, name="Sede Principal")
+    return Branch.all_objects.create(organization=organization, name="Sede Principal")
 
 
 @pytest.fixture
 def customer(organization):
-    return Customer.objects.all_objects.create(
+    return Customer.all_objects.create(
         organization=organization, first_name="Ana", last_name="Torres"
     )
 
 
 @pytest.fixture
 def product(organization):
-    return Product.objects.all_objects.create(
+    return Product.all_objects.create(
         organization=organization, sku="CAM-001", name="Camiseta", price="20.00"
     )
 
 
 @pytest.fixture
 def variant(organization, product):
-    return ProductVariant.objects.all_objects.create(
+    return ProductVariant.all_objects.create(
         organization=organization, product=product, sku="CAM-001-M", stock=10
     )

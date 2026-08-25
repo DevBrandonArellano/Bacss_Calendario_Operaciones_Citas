@@ -76,7 +76,7 @@ class TestRegistrarPago:
 
         appointment.refresh_from_db()
         assert appointment.payment_status == AppointmentPaymentStatus.PAID
-        assert Payment.objects.all_objects.filter(appointment=appointment).count() == 2
+        assert Payment.all_objects.filter(appointment=appointment).count() == 2
 
     def test_pago_sin_cita_no_requiere_cita(self, organization, customer):
         use_case = CreatePaymentUseCase(organization=organization)
@@ -104,7 +104,7 @@ class TestRegistrarPago:
     def test_cita_de_otro_cliente_lanza_validation_error(self, organization, customer, appointment):
         from apps.customers.models import Customer
 
-        otro_cliente = Customer.objects.all_objects.create(
+        otro_cliente = Customer.all_objects.create(
             organization=organization, first_name="Otro", last_name="Cliente"
         )
         use_case = CreatePaymentUseCase(organization=organization)

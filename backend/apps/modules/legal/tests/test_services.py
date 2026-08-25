@@ -23,7 +23,7 @@ class TestCreateLegalCase:
             )
         )
         assert case.status == LegalCaseStatus.NEW
-        events = CaseEvent.objects.all_objects.filter(legal_case=case)
+        events = CaseEvent.all_objects.filter(legal_case=case)
         assert events.count() == 1
         assert events.first().event_type == "case_opened"
 
@@ -47,7 +47,7 @@ class TestTransitionLegalCase:
 
         legal_case.refresh_from_db()
         assert legal_case.status == "in_review"
-        events = CaseEvent.objects.all_objects.filter(legal_case=legal_case, event_type="status_change")
+        events = CaseEvent.all_objects.filter(legal_case=legal_case, event_type="status_change")
         assert events.count() == 1
 
     def test_cerrar_fija_closed_at(self, organization, legal_case):

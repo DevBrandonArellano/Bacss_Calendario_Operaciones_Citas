@@ -29,7 +29,7 @@ class TestCreateLabOrder:
         )
 
         assert lab_order.status == LabProcessStatus.ORDERED
-        assert LabTest.objects.all_objects.filter(lab_order=lab_order).count() == 1
+        assert LabTest.all_objects.filter(lab_order=lab_order).count() == 1
 
     def test_sin_pruebas_lanza_validation_error(self, organization, patient, ordering_employee):
         use_case = CreateLabOrderUseCase(organization=organization)
@@ -54,14 +54,14 @@ class TestCreateLabOrder:
 
 class TestLabOrderStatusAggregation:
     def test_estado_del_pedido_es_el_cuello_de_botella(self, organization, lab_order):
-        advanced = LabTest.objects.all_objects.create(
+        advanced = LabTest.all_objects.create(
             organization=organization,
             lab_order=lab_order,
             test_code="A",
             test_name="A",
             status=LabProcessStatus.PROCESSING,
         )
-        behind = LabTest.objects.all_objects.create(
+        behind = LabTest.all_objects.create(
             organization=organization,
             lab_order=lab_order,
             test_code="B",
@@ -101,7 +101,7 @@ class TestFullPipeline:
         assert lab_test.status == LabProcessStatus.VALIDATED
         assert lab_test.result.validated_at is not None
 
-        lab_order = LabOrder.objects.all_objects.get(id=lab_test.lab_order_id)
+        lab_order = LabOrder.all_objects.get(id=lab_test.lab_order_id)
         assert lab_order.status == LabProcessStatus.VALIDATED
 
     def test_no_se_puede_tomar_muestra_fuera_de_orden(self, organization, lab_test):

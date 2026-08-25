@@ -37,11 +37,11 @@ class TestProductApi:
             reverse("product-list"), {"sku": "CAM-002", "name": "Gorra", "price": "12.00"}
         )
         assert response.status_code == status.HTTP_201_CREATED
-        created = Product.objects.all_objects.get(id=response.data["id"])
+        created = Product.all_objects.get(id=response.data["id"])
         assert created.organization_id == organization.id
 
     def test_aislamiento_por_tenant(self, auth_client, store_active, other_organization):
-        Product.objects.all_objects.create(
+        Product.all_objects.create(
             organization=other_organization, sku="OTRO-1", name="Producto ajeno", price="5.00"
         )
 
@@ -84,7 +84,7 @@ class TestOrderPipelineApi:
         variant.refresh_from_db()
         assert variant.stock == 10  # restituido al cancelar
 
-        order = Order.objects.all_objects.get(id=order_id)
+        order = Order.all_objects.get(id=order_id)
         assert order.status == "cancelled"
 
     def test_stock_insuficiente_devuelve_409(self, auth_client, store_active, customer, branch, variant):
@@ -102,7 +102,7 @@ class TestOrderPipelineApi:
     def test_transicion_invalida_devuelve_409(
         self, auth_client, store_active, organization, customer, branch
     ):
-        order = Order.objects.all_objects.create(organization=organization, customer=customer, branch=branch)
+        order = Order.all_objects.create(organization=organization, customer=customer, branch=branch)
         response = auth_client.post(
             reverse("store-order-transition", args=[order.id]), {"status": "delivered"}
         )

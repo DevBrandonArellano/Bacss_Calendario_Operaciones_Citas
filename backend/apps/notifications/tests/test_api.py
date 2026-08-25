@@ -21,7 +21,7 @@ def _create_notification(organization, recipient_user, **overrides):
         "status": NotificationStatus.SENT,
     }
     fields.update(overrides)
-    return Notification.objects.all_objects.create(**fields)
+    return Notification.all_objects.create(**fields)
 
 
 class TestNotificationList:

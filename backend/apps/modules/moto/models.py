@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from decimal import Decimal
+
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -135,5 +137,10 @@ class WorkOrderItem(TenantAwareModel, TimeStampedModel):
         return f"{self.description} × {self.quantity}"
 
     def save(self, *args, **kwargs):
-        self.subtotal = self.unit_price * self.quantity
+        # Django no convierte `unit_price` a `Decimal` en la asignación
+        # simple (solo al serializar para la DB), así que si llega como
+        # `str` (p. ej. `.create(unit_price="5.50")`, un serializer, o
+        # `seed_demo`), `unit_price * quantity` es repetición de string, no
+        # multiplicación.
+        self.subtotal = Decimal(self.unit_price) * self.quantity
         super().save(*args, **kwargs)
