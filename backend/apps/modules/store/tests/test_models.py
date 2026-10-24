@@ -19,9 +19,7 @@ class TestProductVariant:
         assert variant.effective_price == "15.00"
 
     def test_effective_price_cae_al_precio_del_producto_sin_override(self, organization, product):
-        variant = ProductVariant.all_objects.create(
-            organization=organization, product=product, sku="Y"
-        )
+        variant = ProductVariant.all_objects.create(organization=organization, product=product, sku="Y")
         assert variant.effective_price == product.price
 
 

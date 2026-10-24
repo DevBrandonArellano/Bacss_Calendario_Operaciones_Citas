@@ -25,9 +25,7 @@ def _recompute_work_order_total(work_order: WorkOrder) -> None:
     # `WorkOrderViewSet.get_queryset`), el manager de la relación devuelve
     # el cache del prefetch (tomado antes de crear este ítem nuevo), no una
     # consulta fresca — el total quedaría calculado sobre una lista vieja.
-    total = sum(
-        (item.subtotal for item in WorkOrderItem.objects.filter(work_order=work_order)), Decimal("0")
-    )
+    total = sum((item.subtotal for item in WorkOrderItem.objects.filter(work_order=work_order)), Decimal("0"))
     if work_order.total != total:
         work_order.total = total
         work_order.save(update_fields=["total", "updated_at"])

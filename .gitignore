@@ -41,3 +41,8 @@ frontend/*.tsbuildinfo
 .idea/
 .DS_Store
 Thumbs.db
+
+# Celery Beat
+backend/celerybeat-schedule*
+
+frontend/dist-ssr/

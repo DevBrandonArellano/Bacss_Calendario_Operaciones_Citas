@@ -63,9 +63,7 @@ class TestPatientApi:
     def test_aislamiento_por_tenant(self, auth_client, lab_active, other_organization):
         from apps.modules.laboratory.models import Patient
 
-        Patient.all_objects.create(
-            organization=other_organization, first_name="Otro", last_name="Paciente"
-        )
+        Patient.all_objects.create(organization=other_organization, first_name="Otro", last_name="Paciente")
 
         response = auth_client.get(reverse("patient-list"))
 

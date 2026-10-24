@@ -31,9 +31,7 @@ def test_create_service_rejects_zero_duration(auth_client):
 
 
 def test_list_services_never_returns_other_organization_data(auth_client, organization, other_organization):
-    Service.all_objects.create(
-        organization=organization, name="Propio", duration_minutes=30, price="10.00"
-    )
+    Service.all_objects.create(organization=organization, name="Propio", duration_minutes=30, price="10.00")
     Service.all_objects.create(
         organization=other_organization, name="Ajeno", duration_minutes=30, price="10.00"
     )
@@ -72,9 +70,7 @@ def test_create_employee(auth_client, organization):
 
 def test_list_employees_never_returns_other_organization_data(auth_client, organization, other_organization):
     Employee.all_objects.create(organization=organization, first_name="Propio", last_name="Empleado")
-    Employee.all_objects.create(
-        organization=other_organization, first_name="Ajeno", last_name="Empleado"
-    )
+    Employee.all_objects.create(organization=other_organization, first_name="Ajeno", last_name="Empleado")
 
     response = auth_client.get(reverse("employee-list"))
 

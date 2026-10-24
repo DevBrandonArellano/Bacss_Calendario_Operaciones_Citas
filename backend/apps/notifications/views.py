@@ -20,7 +20,10 @@ class NotificationViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     permission_classes = [HasPermission("notifications:read")]
 
     def get_queryset(self):
-        return Notification.objects.filter(recipient_user=self.request.user)
+        queryset = Notification.objects.filter(recipient_user=self.request.user)
+        if self.request.query_params.get("unread") == "true":
+            queryset = queryset.filter(read_at__isnull=True)
+        return queryset
 
     @action(detail=True, methods=["post"])
     def read(self, request, pk=None):

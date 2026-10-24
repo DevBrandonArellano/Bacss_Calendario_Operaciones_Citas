@@ -8,18 +8,14 @@ pytestmark = pytest.mark.django_db
 
 
 def test_full_name_combines_first_and_last_name(organization):
-    customer = Customer.all_objects.create(
-        organization=organization, first_name="Ana", last_name="Pérez"
-    )
+    customer = Customer.all_objects.create(organization=organization, first_name="Ana", last_name="Pérez")
 
     assert customer.full_name == "Ana Pérez"
 
 
 def test_manager_filters_by_current_organization(organization, other_organization):
     Customer.all_objects.create(organization=organization, first_name="Propio", last_name="Cliente")
-    Customer.all_objects.create(
-        organization=other_organization, first_name="Ajeno", last_name="Cliente"
-    )
+    Customer.all_objects.create(organization=other_organization, first_name="Ajeno", last_name="Cliente")
 
     set_current_organization_id(organization.id)
     try:

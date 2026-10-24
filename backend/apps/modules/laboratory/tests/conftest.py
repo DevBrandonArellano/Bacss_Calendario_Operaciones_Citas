@@ -25,9 +25,7 @@ def ordering_employee(organization, branch):
 
 @pytest.fixture
 def patient(organization):
-    return Patient.all_objects.create(
-        organization=organization, first_name="Elena", last_name="Ramírez"
-    )
+    return Patient.all_objects.create(organization=organization, first_name="Elena", last_name="Ramírez")
 
 
 @pytest.fixture

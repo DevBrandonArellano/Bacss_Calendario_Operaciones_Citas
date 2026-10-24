@@ -48,9 +48,7 @@ def employee(organization, branch, service):
 def customer(organization):
     from apps.customers.models import Customer
 
-    return Customer.all_objects.create(
-        organization=organization, first_name="Cliente", last_name="Uno"
-    )
+    return Customer.all_objects.create(organization=organization, first_name="Cliente", last_name="Uno")
 
 
 @pytest.fixture

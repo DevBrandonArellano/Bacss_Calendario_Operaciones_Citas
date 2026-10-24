@@ -11,11 +11,13 @@ from apps.appointments.serializers import (
     CancelAppointmentSerializer,
     CreateAppointmentSerializer,
     RescheduleAppointmentSerializer,
+    UpdateAppointmentNotesSerializer,
 )
 from apps.appointments.services import (
     CreateAppointmentRequest,
     CreateAppointmentUseCase,
     TransitionAppointmentUseCase,
+    UpdateAppointmentNotesUseCase,
 )
 from core.permissions import HasPermission
 
@@ -25,14 +27,21 @@ class AppointmentViewSet(CreateModelMixin, RetrieveModelMixin, ListModelMixin, G
     queryset = Appointment.objects.all()
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = {
-        "status": ["exact"],
+        "status": ["exact", "in"],
         "branch": ["exact"],
         "employee": ["exact"],
+        "service": ["exact"],
         "customer": ["exact"],
         "appointment_date": ["exact", "gte", "lte"],
     }
     ordering_fields = ["appointment_date", "start_time"]
     ordering = ["appointment_date", "start_time"]
+
+    def get_queryset(self):
+        # No eliminar por "duplicado" del `queryset` de clase: ese se evalúa al
+        # importar, sin tenant fijado, y TenantAwareManager devuelve `.none()`
+        # para siempre. Hay que construirlo por request.
+        return Appointment.objects.select_related("customer", "service", "employee", "branch")
 
     def get_permissions(self):
         if self.action in (
@@ -43,6 +52,7 @@ class AppointmentViewSet(CreateModelMixin, RetrieveModelMixin, ListModelMixin, G
             "start",
             "complete",
             "mark_no_show",
+            "notes",
         ):
             return [HasPermission("appointments:write")]
         return [HasPermission("appointments:read")]
@@ -67,6 +77,16 @@ class AppointmentViewSet(CreateModelMixin, RetrieveModelMixin, ListModelMixin, G
             )
         )
         return Response(AppointmentSerializer(appointment).data, status=201)
+
+    @action(detail=True, methods=["patch"])
+    def notes(self, request, pk=None):
+        appointment = self.get_object()
+        payload = UpdateAppointmentNotesSerializer(data=request.data)
+        payload.is_valid(raise_exception=True)
+        updated = UpdateAppointmentNotesUseCase(actor_user=request.user).execute(
+            appointment, payload.validated_data["notes"]
+        )
+        return Response(AppointmentSerializer(updated).data)
 
     @action(detail=True, methods=["post"])
     def confirm(self, request, pk=None):

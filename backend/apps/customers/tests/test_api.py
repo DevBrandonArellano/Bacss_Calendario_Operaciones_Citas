@@ -30,9 +30,7 @@ def test_create_customer_ignores_organization_sent_in_body(auth_client, organiza
 
 def test_list_customers_never_returns_other_organization_data(auth_client, organization, other_organization):
     Customer.all_objects.create(organization=organization, first_name="Propio", last_name="Cliente")
-    Customer.all_objects.create(
-        organization=other_organization, first_name="Ajeno", last_name="Cliente"
-    )
+    Customer.all_objects.create(organization=other_organization, first_name="Ajeno", last_name="Cliente")
 
     response = auth_client.get(reverse("customer-list"))
 
@@ -41,9 +39,7 @@ def test_list_customers_never_returns_other_organization_data(auth_client, organ
 
 
 def test_update_customer(auth_client, organization):
-    customer = Customer.all_objects.create(
-        organization=organization, first_name="Ana", last_name="Pérez"
-    )
+    customer = Customer.all_objects.create(organization=organization, first_name="Ana", last_name="Pérez")
 
     response = auth_client.patch(
         reverse("customer-detail", args=[customer.id]), {"phone": "0999999999"}, format="json"
@@ -55,9 +51,7 @@ def test_update_customer(auth_client, organization):
 
 
 def test_delete_customer(auth_client, organization):
-    customer = Customer.all_objects.create(
-        organization=organization, first_name="Ana", last_name="Pérez"
-    )
+    customer = Customer.all_objects.create(organization=organization, first_name="Ana", last_name="Pérez")
 
     response = auth_client.delete(reverse("customer-detail", args=[customer.id]))
 
@@ -110,9 +104,7 @@ def test_search_never_returns_other_organization_data(auth_client, organization,
 
 
 def test_history_endpoint_returns_customer_summary(auth_client, organization):
-    customer = Customer.all_objects.create(
-        organization=organization, first_name="Ana", last_name="Perez"
-    )
+    customer = Customer.all_objects.create(organization=organization, first_name="Ana", last_name="Perez")
 
     response = auth_client.get(reverse("customer-history", args=[customer.id]))
 

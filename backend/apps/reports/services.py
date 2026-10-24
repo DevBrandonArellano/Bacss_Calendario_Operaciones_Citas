@@ -21,6 +21,7 @@ from decimal import Decimal
 from django.db.models import Count, Sum
 from django.db.models.functions import TruncDay, TruncMonth, TruncWeek
 
+from core.business_time import business_today
 from core.context import tenant_scope
 
 TRUNC_FUNCS = {"day": TruncDay, "week": TruncWeek, "month": TruncMonth}
@@ -36,7 +37,7 @@ def get_dashboard_summary(*, organization, user) -> dict:
     from apps.payments.models import Payment, PaymentStatus
 
     with tenant_scope(organization.id):
-        today = date.today()
+        today = business_today(organization)
         employee = _employee_scope(user)
 
         today_qs = Appointment.objects.filter(appointment_date=today)

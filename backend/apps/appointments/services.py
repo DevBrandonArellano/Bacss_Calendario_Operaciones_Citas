@@ -259,3 +259,37 @@ class TransitionAppointmentUseCase:
             user=self.actor_user,
             changes={"status": {"from": previous_status, "to": new_status}},
         )
+
+
+class UpdateAppointmentNotesUseCase:
+    """Edita las notas de una cita abierta. Cliente, servicio, profesional y horario
+    no se editan aquí: cambiarlos altera la disponibilidad y se hace reprogramando."""
+
+    def __init__(self, *, actor_user=None):
+        self.actor_user = actor_user
+
+    def execute(self, appointment: Appointment, notes: str) -> Appointment:
+        with tenant_scope(appointment.organization_id):
+            if appointment.status not in ACTIVE_APPOINTMENT_STATUSES:
+                raise domain_exceptions.ConflictError(
+                    f"No se pueden editar las notas de una cita en estado '{appointment.status}'.",
+                    details={"status": appointment.status},
+                )
+            previous = appointment.notes
+            appointment.notes = notes
+            appointment.save(update_fields=["notes", "updated_at"])
+            self._audit(appointment, previous, notes)
+            return appointment
+
+    def _audit(self, appointment: Appointment, previous: str, current: str) -> None:
+        from apps.audit.models import AuditAction
+        from apps.audit.services import log_action
+
+        log_action(
+            action=AuditAction.UPDATE,
+            entity_type="Appointment",
+            entity_id=str(appointment.id),
+            organization=appointment.organization,
+            user=self.actor_user,
+            changes={"notes": {"from": previous, "to": current}},
+        )

@@ -1,4 +1,4 @@
-from datetime import date, time
+from datetime import time
 
 import pytest
 
@@ -6,6 +6,7 @@ from apps.appointments.models import Appointment
 from apps.branches.models import Branch
 from apps.customers.models import Customer
 from apps.services.models import Employee, Service
+from core.business_time import business_today
 
 
 @pytest.fixture
@@ -29,9 +30,7 @@ def employee(organization, branch):
 
 @pytest.fixture
 def customer(organization):
-    return Customer.all_objects.create(
-        organization=organization, first_name="Rosa", last_name="Salinas"
-    )
+    return Customer.all_objects.create(organization=organization, first_name="Rosa", last_name="Salinas")
 
 
 @pytest.fixture
@@ -43,7 +42,7 @@ def make_appointment(organization, branch, service):
             customer=customer,
             service=service,
             employee=employee,
-            appointment_date=appointment_date or date.today(),
+            appointment_date=appointment_date or business_today(organization),
             start_time=time(10, 0),
             end_time=time(10, 30),
             duration_minutes=30,

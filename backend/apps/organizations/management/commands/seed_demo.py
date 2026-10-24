@@ -170,9 +170,7 @@ def _seed_lab_order(*, organization, customers):
             last_name=customers[0].last_name,
             document_number=customers[0].document_number,
         ),
-        Patient.all_objects.create(
-            organization=organization, first_name="Paciente", last_name="Sin cuenta"
-        ),
+        Patient.all_objects.create(organization=organization, first_name="Paciente", last_name="Sin cuenta"),
     ]
 
     # Lecturas fuera de un caso de uso (que fija su propio contexto vía
@@ -385,9 +383,7 @@ class Command(BaseCommand):
             customers = [
                 Customer.all_objects.create(organization=motors, **data) for data in _MOTORS_CUSTOMERS
             ]
-            services = [
-                Service.all_objects.create(organization=motors, **data) for data in _MOTORS_SERVICES
-            ]
+            services = [Service.all_objects.create(organization=motors, **data) for data in _MOTORS_SERVICES]
             employees = []
             for data in _MOTORS_EMPLOYEES:
                 employee = Employee.all_objects.create(organization=motors, branch=branch, **data)
@@ -419,12 +415,8 @@ class Command(BaseCommand):
                 last_name="LabX",
             )
             admin.roles.add(admin_role)
-            customers = [
-                Customer.all_objects.create(organization=labx, **data) for data in _LABX_CUSTOMERS
-            ]
-            services = [
-                Service.all_objects.create(organization=labx, **data) for data in _LABX_SERVICES
-            ]
+            customers = [Customer.all_objects.create(organization=labx, **data) for data in _LABX_CUSTOMERS]
+            services = [Service.all_objects.create(organization=labx, **data) for data in _LABX_SERVICES]
             employees = []
             for data in _LABX_EMPLOYEES:
                 employee = Employee.all_objects.create(organization=labx, branch=branch, **data)
@@ -457,8 +449,7 @@ class Command(BaseCommand):
             )
             admin.roles.add(admin_role)
             customers = [
-                Customer.all_objects.create(organization=urbanstore, **data)
-                for data in _URBANSTORE_CUSTOMERS
+                Customer.all_objects.create(organization=urbanstore, **data) for data in _URBANSTORE_CUSTOMERS
             ]
             _seed_store_catalog(organization=urbanstore, branch=branch, customers=customers)
             self.stdout.write(self.style.SUCCESS("Organización 'UrbanStore' creada."))
@@ -480,8 +471,7 @@ class Command(BaseCommand):
             )
             admin.roles.add(admin_role)
             customers = [
-                Customer.all_objects.create(organization=legalxyz, **data)
-                for data in _LEGALXYZ_CUSTOMERS
+                Customer.all_objects.create(organization=legalxyz, **data) for data in _LEGALXYZ_CUSTOMERS
             ]
             lawyer = Employee.all_objects.create(
                 organization=legalxyz, branch=branch, first_name="Marco", last_name="Abogado"

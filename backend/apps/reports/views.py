@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 
 from apps.reports import services
 from core import exceptions as domain_exceptions
+from core.business_time import business_today
 from core.permissions import HasPermission
 
 
@@ -21,7 +22,7 @@ def _parse_date(value: str | None, default: date) -> date:
 
 
 def _date_range(request, default_days: int = 30) -> tuple[date, date]:
-    today = date.today()
+    today = business_today(request.user.organization)
     date_from = _parse_date(request.query_params.get("date_from"), today - timedelta(days=default_days))
     date_to = _parse_date(request.query_params.get("date_to"), today)
     return date_from, date_to

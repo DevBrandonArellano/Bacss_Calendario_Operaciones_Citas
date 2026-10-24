@@ -43,6 +43,21 @@ class TestNotificationList:
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
+class TestUnreadFilter:
+    def test_unread_true_excluye_las_ya_leidas(self, auth_client, organization, org_admin_user):
+        from django.utils import timezone
+
+        unread = _create_notification(organization, org_admin_user)
+        _create_notification(
+            organization, org_admin_user, read_at=timezone.now(), status=NotificationStatus.READ
+        )
+
+        response = auth_client.get(reverse("notification-list"), {"unread": "true"})
+
+        assert [item["id"] for item in response.data["results"]] == [str(unread.id)]
+        assert response.data["count"] == 1
+
+
 class TestMarkNotificationAsRead:
     def test_marca_como_leida(self, auth_client, organization, org_admin_user):
         notification = _create_notification(organization, org_admin_user, status=NotificationStatus.SENT)

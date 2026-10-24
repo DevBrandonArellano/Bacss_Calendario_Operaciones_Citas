@@ -48,9 +48,7 @@ class TestNotificationSetting:
     def test_unico_por_organizacion(self, organization):
         NotificationSetting.all_objects.create(organization=organization, reminder_offsets_hours=[24])
         with pytest.raises(IntegrityError):
-            NotificationSetting.all_objects.create(
-                organization=organization, reminder_offsets_hours=[2]
-            )
+            NotificationSetting.all_objects.create(organization=organization, reminder_offsets_hours=[2])
 
 
 class TestNotification:
