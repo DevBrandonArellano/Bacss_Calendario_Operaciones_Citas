@@ -10,5 +10,7 @@ class AuditLogListView(ListAPIView):
     permission_classes = [HasPermission("audit:read")]
 
     def get_queryset(self):
-        organization = self.request.user.organization
-        return AuditLog.objects.filter(organization=organization)
+        # AuditLog.objects ya filtra por la organización del contexto actual
+        # (apps/audit/models.py, AuditLogManager) — igual que el resto de
+        # modelos tenant-aware, no hace falta filtrar a mano aquí.
+        return AuditLog.objects.all()

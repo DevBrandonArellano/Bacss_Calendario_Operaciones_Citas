@@ -7,3 +7,13 @@ repos:
         files: ^backend/
       - id: ruff-format
         files: ^backend/
+  # Hook local (no un mirror) porque llama directo al eslint ya configurado
+  # en frontend/package.json, en vez de duplicar su versión/config aparte.
+  - repo: local
+    hooks:
+      - id: eslint-frontend
+        name: eslint (frontend)
+        entry: bash -c 'cd frontend && npm run lint'
+        language: system
+        files: ^frontend/.*\.(ts|tsx|js|jsx)$
+        pass_filenames: false

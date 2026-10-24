@@ -35,7 +35,9 @@ class TestUploadDocument:
         document = Document.objects.all_objects.get(id=response.data["id"])
         assert document.organization_id == organization.id
         assert document.size_bytes > 0
-        assert AuditLog.objects.filter(action=AuditAction.CREATE, entity_type="Document").exists()
+        # all_objects: igual que Document arriba, la lectura corre fuera del
+        # contexto de tenant de la request ya finalizada.
+        assert AuditLog.all_objects.filter(action=AuditAction.CREATE, entity_type="Document").exists()
 
     def test_recepcion_no_puede_subir_documento_de_un_caso_legal(
         self, reception_client, organization, customer
@@ -86,7 +88,7 @@ class TestDownloadDocument:
         response = auth_client.get(reverse("document-download", args=[document_id]))
 
         assert response.status_code == status.HTTP_200_OK
-        assert AuditLog.objects.filter(
+        assert AuditLog.all_objects.filter(
             action=AuditAction.DOWNLOAD, entity_type="Document", entity_id=document_id
         ).exists()
 

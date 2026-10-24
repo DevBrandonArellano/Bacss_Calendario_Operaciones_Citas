@@ -246,6 +246,14 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 
 ## Fase 13 — Seguridad (auditoría y endurecimiento)
 
+> Adelanto puntual (2026-09-08, fuera de esta fase formal): una auditoría de
+> configuración encontró y corrigió dos hallazgos que técnicamente caen aquí
+> — `AuditLog` no heredaba el aislamiento automático por tenant (ver
+> `docs/roadmap.md`, entrada 2026-09-08) y `SECRET_KEY`/`DB_PASSWORD` no
+> fallaban rápido en producción si faltaban. No se marcan los ítems de abajo
+> como hechos: fue una corrección puntual, no la batería de pruebas de
+> aislamiento ni la revisión SoA completa que pide esta fase.
+
 - [ ] Batería de tests de aislamiento entre tenants por cada endpoint/módulo
 - [ ] Revisión de permisos por rol en todos los endpoints
 - [ ] Control de acceso y descargas auditadas en documentos

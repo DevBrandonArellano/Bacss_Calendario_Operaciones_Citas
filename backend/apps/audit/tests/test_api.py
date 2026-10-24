@@ -19,7 +19,12 @@ def test_login_is_recorded_in_audit_log(api_client, organization):
 
     from apps.audit.models import AuditLog
 
-    assert AuditLog.objects.filter(action=AuditAction.LOGIN, entity_type="User").exists()
+    # all_objects: el login ocurre sin usuario autenticado todavía, así que
+    # no hay organización en el contexto para que AuditLog.objects (ahora
+    # tenant-scoped) la resuelva — la escritura sí lleva la organización
+    # correcta (log_action la recibe explícita), solo la lectura de este
+    # test necesita el manager sin filtro.
+    assert AuditLog.all_objects.filter(action=AuditAction.LOGIN, entity_type="User").exists()
 
 
 def test_audit_log_list_never_returns_other_organization_entries(

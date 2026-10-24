@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 import { useAuth } from "@/features/auth/useAuth";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 function navLinkClassName({ isActive }: { isActive: boolean }): string {
   return isActive ? "nav-link-active" : "";
@@ -80,9 +81,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
             Buscar
           </NavLink>
         </nav>
-        <button type="button" onClick={handleLogout}>
-          Cerrar sesión
-        </button>
+        <div className="app-header-actions">
+          <ThemeToggle />
+          <button type="button" onClick={handleLogout}>
+            Cerrar sesión
+          </button>
+        </div>
       </header>
       <main>{children}</main>
     </div>

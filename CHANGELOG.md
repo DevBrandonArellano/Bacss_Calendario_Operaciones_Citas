@@ -6,6 +6,12 @@ El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). El
 
 ## [Unreleased]
 
+### Security
+
+- Corregido el único modelo de negocio que no respetaba el aislamiento automático entre empresas (organizaciones): el registro de auditoría (`AuditLog`) ahora filtra automáticamente por organización igual que el resto del sistema, en vez de depender de que cada pantalla lo filtrara a mano. Hoy no había ninguna fuga real porque la única pantalla que lo usa ya filtraba correctamente, pero cualquier código nuevo que se olvidara de hacerlo habría quedado expuesto.
+- Si la plataforma se despliega a producción sin configurar la clave secreta o la contraseña de la base de datos, ahora el sistema se niega a arrancar en vez de arrancar en silencio con valores de desarrollo (adivinables).
+- Agregado un toggle manual de tema claro/oscuro (antes solo se seguía la preferencia del sistema operativo, sin poder anularla desde la app).
+
 ### Added
 
 - **Gestión de credenciales para integraciones de terceros** (Fase 12B, en curso): las empresas ahora pueden crear y revocar sus propias API Keys y clientes OAuth2 desde `/api/integrations/`, para que sistemas externos (ERPs, herramientas de terceros) puedan conectarse a su cuenta sin compartir contraseñas de usuario. Cada credencial declara qué puede hacer (permisos granulares) y solo puede ver/modificar datos de la empresa que la creó — nunca de otra.

@@ -47,9 +47,6 @@ class AppointmentViewSet(CreateModelMixin, RetrieveModelMixin, ListModelMixin, G
             return [HasPermission("appointments:write")]
         return [HasPermission("appointments:read")]
 
-    def get_queryset(self):
-        return Appointment.objects.all()
-
     def create(self, request, *args, **kwargs):
         payload = CreateAppointmentSerializer(data=request.data)
         payload.is_valid(raise_exception=True)

@@ -116,7 +116,10 @@ class TestLabResultReadAudit:
         response = auth_client.get(reverse("lab-result-detail", args=[lab_result.id]))
 
         assert response.status_code == status.HTTP_200_OK
-        entry = AuditLog.objects.get(
+        # all_objects: la lectura corre después de que la request terminó y
+        # el contexto de tenant ya se restauró (AuditLog.objects filtra por
+        # organización actual desde este fix).
+        entry = AuditLog.all_objects.get(
             action=AuditAction.READ, entity_type="LabResult", entity_id=str(lab_result.id)
         )
         assert entry.user_id is not None
@@ -125,7 +128,7 @@ class TestLabResultReadAudit:
         response = auth_client.get(reverse("lab-result-list"))
 
         assert response.status_code == status.HTTP_200_OK
-        assert AuditLog.objects.filter(
+        assert AuditLog.all_objects.filter(
             action=AuditAction.READ, entity_type="LabResult", entity_id=""
         ).exists()
 

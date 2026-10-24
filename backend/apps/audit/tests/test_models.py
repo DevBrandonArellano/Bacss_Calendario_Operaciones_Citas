@@ -15,7 +15,11 @@ def test_log_action_creates_entry(organization, org_admin_user):
         user=org_admin_user,
     )
 
-    assert AuditLog.objects.filter(id=entry.id).exists()
+    # all_objects: la lectura corre fuera de una request/tenant_scope real
+    # (igual que el resto de la suite, ver Document.objects.all_objects en
+    # apps/documents/tests/test_api.py), así que no hay organización en el
+    # contexto para que AuditLog.objects (tenant-scoped) la resuelva.
+    assert AuditLog.all_objects.filter(id=entry.id).exists()
 
 
 def test_audit_log_cannot_be_updated(organization, org_admin_user):
