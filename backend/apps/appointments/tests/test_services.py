@@ -46,7 +46,7 @@ class TestValidacionesDelMotorDeReservas:
             )
 
     def test_servicio_inactivo_lanza_validation_error(self, organization, customer, employee, branch, monday):
-        inactive_service = Service.objects.all_objects.create(
+        inactive_service = Service.all_objects.create(
             organization=organization,
             name="Inactivo",
             duration_minutes=30,
@@ -71,10 +71,10 @@ class TestValidacionesDelMotorDeReservas:
     def test_empleado_que_no_presta_el_servicio_lanza_validation_error(
         self, organization, customer, branch, monday
     ):
-        other_service = Service.objects.all_objects.create(
+        other_service = Service.all_objects.create(
             organization=organization, name="Otro", duration_minutes=30, price="5.00"
         )
-        employee_sin_ese_servicio = Employee.objects.all_objects.create(
+        employee_sin_ese_servicio = Employee.all_objects.create(
             organization=organization, branch=branch, first_name="Sin", last_name="Servicio"
         )
         use_case = CreateAppointmentUseCase(organization=organization)
@@ -113,10 +113,10 @@ class TestValidacionesDelMotorDeReservas:
     def test_sucursal_que_no_ofrece_el_servicio_lanza_validation_error(
         self, organization, customer, employee, monday
     ):
-        service_restringido = Service.objects.all_objects.create(
+        service_restringido = Service.all_objects.create(
             organization=organization, name="Restringido", duration_minutes=30, price="5.00"
         )
-        otra_sucursal = Branch.objects.all_objects.create(organization=organization, name="Otra")
+        otra_sucursal = Branch.all_objects.create(organization=organization, name="Otra")
         service_restringido.branches.add(otra_sucursal)
         employee.services.add(service_restringido)
         use_case = CreateAppointmentUseCase(organization=organization)
@@ -270,4 +270,4 @@ class TestTransicionesDeEstado:
         assert appointment.status == AppointmentStatus.RESCHEDULED
         assert new_appointment.start_time == time(11, 0)
         assert new_appointment.status == AppointmentStatus.CONFIRMED
-        assert Appointment.objects.all_objects.filter(organization=organization).count() == 2
+        assert Appointment.all_objects.filter(organization=organization).count() == 2

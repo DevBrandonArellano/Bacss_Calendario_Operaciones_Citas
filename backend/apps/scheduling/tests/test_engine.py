@@ -25,19 +25,19 @@ def _next_monday() -> date:
 
 @pytest.fixture
 def branch(organization):
-    return Branch.objects.all_objects.create(organization=organization, name="Sucursal Norte")
+    return Branch.all_objects.create(organization=organization, name="Sucursal Norte")
 
 
 @pytest.fixture
 def service(organization):
-    return Service.objects.all_objects.create(
+    return Service.all_objects.create(
         organization=organization, name="Corte", duration_minutes=30, price="10.00"
     )
 
 
 @pytest.fixture
 def employee(organization, branch, service):
-    emp = Employee.objects.all_objects.create(
+    emp = Employee.all_objects.create(
         organization=organization, branch=branch, first_name="Ana", last_name="Prof"
     )
     emp.services.add(service)
@@ -48,7 +48,7 @@ def employee(organization, branch, service):
 def customer(organization):
     from apps.customers.models import Customer
 
-    return Customer.objects.all_objects.create(
+    return Customer.all_objects.create(
         organization=organization, first_name="Cliente", last_name="Uno"
     )
 
@@ -57,10 +57,10 @@ def customer(organization):
 def monday(branch, employee, organization):
     target = _next_monday()
     weekday = target.weekday()
-    Schedule.objects.all_objects.create(
+    Schedule.all_objects.create(
         organization=organization, branch=branch, weekday=weekday, start_time=time(9, 0), end_time=time(17, 0)
     )
-    Schedule.objects.all_objects.create(
+    Schedule.all_objects.create(
         organization=organization,
         employee=employee,
         weekday=weekday,
@@ -108,7 +108,7 @@ class TestSlotsBasicos:
 
 class TestDescansos:
     def test_descanso_excluye_slots_dentro_del_rango(self, organization, branch, employee, service, monday):
-        Schedule.objects.all_objects.create(
+        Schedule.all_objects.create(
             organization=organization,
             branch=branch,
             weekday=monday.weekday(),
@@ -132,11 +132,11 @@ class TestDescansos:
     ):
         # Servicio de 30 min: el slot 11:30-12:00 debe ser válido (termina
         # justo cuando empieza el descanso, no hay solapamiento real).
-        service_30 = Service.objects.all_objects.create(
+        service_30 = Service.all_objects.create(
             organization=organization, name="Rápido", duration_minutes=30, price="5.00"
         )
         employee.services.add(service_30)
-        Schedule.objects.all_objects.create(
+        Schedule.all_objects.create(
             organization=organization,
             branch=branch,
             weekday=monday.weekday(),
@@ -167,7 +167,7 @@ class TestBloqueos:
     def test_feriado_organizacional_bloquea_todos_los_slots(
         self, organization, branch, employee, service, monday
     ):
-        AvailabilityBlock.objects.all_objects.create(
+        AvailabilityBlock.all_objects.create(
             organization=organization,
             date=monday,
             start_time=time(0, 0),
@@ -188,18 +188,18 @@ class TestBloqueos:
     def test_vacaciones_de_un_empleado_no_afectan_a_otro(
         self, organization, branch, employee, service, monday
     ):
-        other_employee = Employee.objects.all_objects.create(
+        other_employee = Employee.all_objects.create(
             organization=organization, branch=branch, first_name="Otro", last_name="Prof"
         )
         other_employee.services.add(service)
-        Schedule.objects.all_objects.create(
+        Schedule.all_objects.create(
             organization=organization,
             employee=other_employee,
             weekday=monday.weekday(),
             start_time=time(9, 0),
             end_time=time(17, 0),
         )
-        AvailabilityBlock.objects.all_objects.create(
+        AvailabilityBlock.all_objects.create(
             organization=organization,
             employee=employee,
             date=monday,
@@ -229,7 +229,7 @@ class TestBloqueos:
 
 class TestCitasExistentes:
     def test_cita_activa_excluye_su_horario(self, organization, branch, employee, service, customer, monday):
-        Appointment.objects.all_objects.create(
+        Appointment.all_objects.create(
             organization=organization,
             branch=branch,
             customer=customer,
@@ -253,7 +253,7 @@ class TestCitasExistentes:
         )
 
     def test_cita_cancelada_no_ocupa_agenda(self, organization, branch, employee, service, customer, monday):
-        Appointment.objects.all_objects.create(
+        Appointment.all_objects.create(
             organization=organization,
             branch=branch,
             customer=customer,

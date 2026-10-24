@@ -10,7 +10,7 @@ pytestmark = pytest.mark.django_db
 def _make_service(organization, **kwargs):
     defaults = {"name": "Corte de cabello", "duration_minutes": 30, "price": "10.00"}
     defaults.update(kwargs)
-    return Service.objects.all_objects.create(organization=organization, **defaults)
+    return Service.all_objects.create(organization=organization, **defaults)
 
 
 @pytest.mark.parametrize("duration", [1, 30, 480])
@@ -23,7 +23,15 @@ def test_valid_durations_are_accepted(organization, duration):
 
 @pytest.mark.parametrize("duration", [0, -1, -30])
 def test_non_positive_durations_are_rejected(organization, duration):
-    service = _make_service(organization, duration_minutes=duration)
+    # `duration_minutes` es `PositiveIntegerField`: Django agrega un CHECK
+    # constraint a nivel de Postgres (>= 0), así que un valor negativo ya
+    # falla en `.create()` con `IntegrityError` antes de llegar a
+    # `full_clean()`. Para probar la validación de `full_clean()` (que
+    # también rechaza 0, ya que el validador exige >= 1) hay que armar la
+    # instancia sin guardarla.
+    service = Service(
+        organization=organization, name="Corte de cabello", duration_minutes=duration, price="10.00"
+    )
 
     with pytest.raises(ValidationError):
         service.full_clean()
@@ -44,7 +52,7 @@ def test_service_name_unique_per_organization(organization):
 
 
 def test_employee_full_name(organization):
-    employee = Employee.objects.all_objects.create(
+    employee = Employee.all_objects.create(
         organization=organization, first_name="Carlos", last_name="Mecánico"
     )
 
@@ -52,12 +60,19 @@ def test_employee_full_name(organization):
 
 
 def test_employee_services_relation(organization):
+    from core.context import tenant_scope
+
     service = _make_service(organization)
-    employee = Employee.objects.all_objects.create(
+    employee = Employee.all_objects.create(
         organization=organization, first_name="Carlos", last_name="Mecánico"
     )
 
     employee.services.add(service)
 
-    assert list(employee.services.all()) == [service]
-    assert list(service.employees.all()) == [employee]
+    # Los related managers de la M2M (`employee.services`, `service.employees`)
+    # usan el manager por defecto (`TenantAwareManager`), que solo resuelve
+    # filas con un tenant fijado en el contexto (igual que el resto de la
+    # app fuera de una request HTTP, ver `core/context.py`).
+    with tenant_scope(organization.id):
+        assert list(employee.services.all()) == [service]
+        assert list(service.employees.all()) == [employee]

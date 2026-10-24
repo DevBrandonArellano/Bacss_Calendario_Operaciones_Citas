@@ -59,7 +59,7 @@ def test_concurrent_bookings_to_the_same_slot_do_not_double_book(
     assert len(successes) == 1, f"Se esperaba exactamente 1 reserva exitosa, hubo {len(successes)}"
     assert len(failures) == 1, f"Se esperaba exactamente 1 conflicto, hubo {len(failures)}"
 
-    active_appointments = Appointment.objects.all_objects.filter(
+    active_appointments = Appointment.all_objects.filter(
         organization=organization,
         employee=employee,
         appointment_date=monday,

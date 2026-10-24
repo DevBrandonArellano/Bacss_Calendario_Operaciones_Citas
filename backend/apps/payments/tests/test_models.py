@@ -7,7 +7,7 @@ pytestmark = pytest.mark.django_db
 
 class TestPayment:
     def test_valores_por_defecto(self, organization, customer):
-        payment = Payment.objects.all_objects.create(
+        payment = Payment.all_objects.create(
             organization=organization, customer=customer, amount="10.00", method=PaymentMethod.CASH
         )
         assert payment.status == PaymentStatus.PAID
@@ -15,7 +15,7 @@ class TestPayment:
         assert payment.refunded_at is None
 
     def test_permite_vincular_a_una_cita(self, organization, customer, appointment):
-        payment = Payment.objects.all_objects.create(
+        payment = Payment.all_objects.create(
             organization=organization,
             customer=customer,
             appointment=appointment,

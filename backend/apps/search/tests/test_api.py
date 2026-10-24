@@ -28,7 +28,7 @@ class TestGlobalSearch:
         assert response.data["results"] == []
 
     def test_encuentra_clientes_por_nombre(self, auth_client, organization):
-        Customer.objects.all_objects.create(
+        Customer.all_objects.create(
             organization=organization, first_name="Valentina", last_name="Ruiz"
         )
 
@@ -40,9 +40,9 @@ class TestGlobalSearch:
 
     def test_no_incluye_resultados_de_un_modulo_inactivo(self, auth_client, organization):
         # 'moto' no está activo para esta organización: no debe buscar Motorcycle.
-        Motorcycle.objects.all_objects.create(
+        Motorcycle.all_objects.create(
             organization=organization,
-            customer=Customer.objects.all_objects.create(
+            customer=Customer.all_objects.create(
                 organization=organization, first_name="X", last_name="Y"
             ),
             plate="XYZMOTO",
@@ -57,10 +57,10 @@ class TestGlobalSearch:
 
     def test_incluye_motos_cuando_el_modulo_esta_activo(self, auth_client, organization):
         ModuleActivation.objects.create(organization=organization, module_code=ModuleCode.MOTO)
-        customer = Customer.objects.all_objects.create(
+        customer = Customer.all_objects.create(
             organization=organization, first_name="X", last_name="Y"
         )
-        Motorcycle.objects.all_objects.create(
+        Motorcycle.all_objects.create(
             organization=organization, customer=customer, plate="ABCMOTO", brand="Yamaha", model="FZ"
         )
 
@@ -71,14 +71,14 @@ class TestGlobalSearch:
 
     def test_recepcion_no_ve_casos_legales_sin_permiso(self, reception_client, organization):
         ModuleActivation.objects.create(organization=organization, module_code=ModuleCode.LEGAL)
-        branch = Branch.objects.all_objects.create(organization=organization, name="Sede")
-        customer = Customer.objects.all_objects.create(
+        branch = Branch.all_objects.create(organization=organization, name="Sede")
+        customer = Customer.all_objects.create(
             organization=organization, first_name="X", last_name="Y"
         )
-        lawyer = Employee.objects.all_objects.create(
+        lawyer = Employee.all_objects.create(
             organization=organization, branch=branch, first_name="A", last_name="B"
         )
-        LegalCase.objects.all_objects.create(
+        LegalCase.all_objects.create(
             organization=organization,
             case_number="LEGSEARCH1",
             customer=customer,
@@ -92,7 +92,7 @@ class TestGlobalSearch:
         assert "legal_case" not in types
 
     def test_no_devuelve_resultados_de_otra_organizacion(self, auth_client, organization, other_organization):
-        Customer.objects.all_objects.create(
+        Customer.all_objects.create(
             organization=other_organization, first_name="Ajenisimo", last_name="Otro"
         )
 

@@ -14,26 +14,26 @@ def legal_active(organization):
 
 @pytest.fixture
 def branch(organization):
-    return Branch.objects.all_objects.create(organization=organization, name="Sede Principal")
+    return Branch.all_objects.create(organization=organization, name="Sede Principal")
 
 
 @pytest.fixture
 def customer(organization):
-    return Customer.objects.all_objects.create(
+    return Customer.all_objects.create(
         organization=organization, first_name="Rosa", last_name="Salinas"
     )
 
 
 @pytest.fixture
 def lawyer(organization, branch):
-    return Employee.objects.all_objects.create(
+    return Employee.all_objects.create(
         organization=organization, branch=branch, first_name="Marco", last_name="Abogado"
     )
 
 
 @pytest.fixture
 def legal_case(organization, customer, lawyer):
-    return LegalCase.objects.all_objects.create(
+    return LegalCase.all_objects.create(
         organization=organization,
         case_number="CASE-001",
         customer=customer,

@@ -17,6 +17,27 @@ def reception_client(api_client, organization, system_roles, make_user):
     return api_client
 
 
+@pytest.fixture
+def professional_client(organization, system_roles, make_user):
+    # `docs/auth-rbac.md`: Admin empresa solo tiene "R" sobre `LabResult`;
+    # únicamente el Profesional tiene "RU" (puede validar). `lab_results:write`
+    # no está en los permisos de `org_admin` (`permissions_catalog.py`) a
+    # propósito — es el mismo `auth_client` (org_admin) el que no puede
+    # validar, no un bug de permisos.
+    #
+    # Usa su propia instancia de `APIClient` (no la fixture `api_client`
+    # compartida): un test que combine `auth_client` y `professional_client`
+    # necesita dos clientes autenticados como usuarios distintos al mismo
+    # tiempo, no que el segundo sobreescriba las credenciales del primero.
+    from rest_framework.test import APIClient
+
+    client = APIClient()
+    user = make_user(organization, "bioquimica@motorsecuador.test", roles=["professional"])
+    token = RefreshToken.for_user(user)
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {token.access_token}")
+    return client
+
+
 class TestModuloInactivo:
     def test_listar_pacientes_sin_modulo_activo_devuelve_404(self, auth_client):
         response = auth_client.get(reverse("patient-list"))
@@ -36,13 +57,13 @@ class TestPatientApi:
         response = auth_client.post(reverse("patient-list"), {"first_name": "Jorge", "last_name": "Paredes"})
 
         assert response.status_code == status.HTTP_201_CREATED
-        created = Patient.objects.all_objects.get(id=response.data["id"])
+        created = Patient.all_objects.get(id=response.data["id"])
         assert created.organization_id == organization.id
 
     def test_aislamiento_por_tenant(self, auth_client, lab_active, other_organization):
         from apps.modules.laboratory.models import Patient
 
-        Patient.objects.all_objects.create(
+        Patient.all_objects.create(
             organization=other_organization, first_name="Otro", last_name="Paciente"
         )
 
@@ -54,7 +75,9 @@ class TestPatientApi:
 
 
 class TestLabOrderPipelineApi:
-    def test_flujo_completo_via_api(self, auth_client, lab_active, organization, patient, ordering_employee):
+    def test_flujo_completo_via_api(
+        self, auth_client, professional_client, lab_active, organization, patient, ordering_employee
+    ):
         create_response = auth_client.post(
             reverse("lab-order-list"),
             {
@@ -76,7 +99,7 @@ class TestLabOrderPipelineApi:
             reverse("lab-test-collect-sample", args=[lab_test_id]), {"sample_type": "Sangre"}
         )
         assert sample_response.status_code == status.HTTP_200_OK
-        assert Sample.objects.all_objects.filter(lab_test_id=lab_test_id).exists()
+        assert Sample.all_objects.filter(lab_test_id=lab_test_id).exists()
 
         auth_client.post(reverse("lab-test-transition", args=[lab_test_id]), {"status": "processing"})
 
@@ -85,13 +108,13 @@ class TestLabOrderPipelineApi:
             {"result_value": "12.5", "unit": "g/dL"},
         )
         assert result_response.status_code == status.HTTP_200_OK
-        assert LabResult.objects.all_objects.filter(lab_test_id=lab_test_id).exists()
+        assert LabResult.all_objects.filter(lab_test_id=lab_test_id).exists()
 
-        validate_response = auth_client.post(reverse("lab-test-validate", args=[lab_test_id]))
+        validate_response = professional_client.post(reverse("lab-test-validate", args=[lab_test_id]))
         assert validate_response.status_code == status.HTTP_200_OK
         assert validate_response.data["status"] == LabProcessStatus.VALIDATED
 
-        lab_test = LabTest.objects.all_objects.get(id=lab_test_id)
+        lab_test = LabTest.all_objects.get(id=lab_test_id)
         assert lab_test.status == LabProcessStatus.VALIDATED
 
     def test_transicion_invalida_devuelve_409(self, auth_client, lab_active, lab_test):
@@ -108,7 +131,7 @@ class TestLabResultReadAudit:
 
     @pytest.fixture
     def lab_result(self, organization, lab_test):
-        return LabResult.objects.all_objects.create(
+        return LabResult.all_objects.create(
             organization=organization, lab_test=lab_test, result_value="12.5", unit="g/dL"
         )
 

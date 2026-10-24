@@ -44,8 +44,8 @@ class TestAislamientoMultitenant:
     def test_organizacion_a_no_ve_sucursales_de_organizacion_b(
         self, auth_client, other_org_client, organization, other_organization
     ):
-        Branch.objects.all_objects.create(organization=organization, name="Sucursal A")
-        Branch.objects.all_objects.create(organization=other_organization, name="Sucursal B")
+        Branch.all_objects.create(organization=organization, name="Sucursal A")
+        Branch.all_objects.create(organization=other_organization, name="Sucursal B")
 
         response_a = auth_client.get(reverse("branch-list"))
         response_b = other_org_client.get(reverse("branch-list"))
@@ -81,7 +81,7 @@ class TestAislamientoMultitenant:
 
     def test_valor_limite_organization_id_nulo_no_filtra_todo_por_accidente(self, api_client, organization):
         """Caja blanca: sin organización en contexto, el manager devuelve vacío, no todo."""
-        Branch.objects.all_objects.create(organization=organization, name="Sucursal A")
+        Branch.all_objects.create(organization=organization, name="Sucursal A")
 
         response = api_client.get(reverse("branch-list"))
 

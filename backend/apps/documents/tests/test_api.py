@@ -32,7 +32,7 @@ class TestUploadDocument:
         response = auth_client.post(reverse("document-list"), _upload_payload(customer), format="multipart")
 
         assert response.status_code == status.HTTP_201_CREATED
-        document = Document.objects.all_objects.get(id=response.data["id"])
+        document = Document.all_objects.get(id=response.data["id"])
         assert document.organization_id == organization.id
         assert document.size_bytes > 0
         # all_objects: igual que Document arriba, la lectura corre fuera del
@@ -99,10 +99,10 @@ class TestTenantIsolation:
     ):
         from apps.customers.models import Customer
 
-        other_customer = Customer.objects.all_objects.create(
+        other_customer = Customer.all_objects.create(
             organization=other_organization, first_name="Ajeno", last_name="Ajeno"
         )
-        other_document = Document.objects.all_objects.create(
+        other_document = Document.all_objects.create(
             organization=other_organization,
             owner_type="customer",
             owner_id=other_customer.id,

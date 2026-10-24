@@ -47,7 +47,11 @@ class LegalCase(TenantAwareModel, TimeStampedModel):
         "services.Employee", on_delete=models.PROTECT, related_name="legal_cases"
     )
     status = models.CharField(max_length=20, choices=LegalCaseStatus.choices, default=LegalCaseStatus.NEW)
-    opened_at = models.DateField(default=timezone.now)
+    # `timezone.now` devuelve un `datetime`, no un `date` — con un
+    # `DateField`, el objeto recién creado en memoria (antes de recargarlo
+    # de la DB) queda con un `datetime` real en `opened_at`, lo que rompe la
+    # serialización DRF (`DateField.to_representation` rechaza `datetime`).
+    opened_at = models.DateField(default=timezone.localdate)
     closed_at = models.DateField(null=True, blank=True)
     priority = models.CharField(max_length=10, choices=CasePriority.choices, default=CasePriority.MEDIUM)
     description = models.TextField(blank=True)

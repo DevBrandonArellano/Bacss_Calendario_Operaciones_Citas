@@ -8,18 +8,18 @@ pytestmark = pytest.mark.django_db
 
 class TestPatient:
     def test_documento_unico_por_organizacion(self, organization):
-        Patient.objects.all_objects.create(
+        Patient.all_objects.create(
             organization=organization, first_name="A", last_name="B", document_number="0102030405"
         )
         with pytest.raises(IntegrityError):
-            Patient.objects.all_objects.create(
+            Patient.all_objects.create(
                 organization=organization, first_name="C", last_name="D", document_number="0102030405"
             )
 
     def test_documento_vacio_no_colisiona(self, organization):
-        Patient.objects.all_objects.create(organization=organization, first_name="A", last_name="B")
+        Patient.all_objects.create(organization=organization, first_name="A", last_name="B")
         # No debe lanzar: el constraint excluye document_number vacío.
-        Patient.objects.all_objects.create(organization=organization, first_name="C", last_name="D")
+        Patient.all_objects.create(organization=organization, first_name="C", last_name="D")
 
 
 class TestLabTestTransitions:
@@ -40,7 +40,7 @@ class TestLabTestTransitions:
     def test_tabla_de_decision_transiciones(self, organization, lab_order, current, target, expected):
         from apps.modules.laboratory.models import LabTest
 
-        test = LabTest.objects.all_objects.create(
+        test = LabTest.all_objects.create(
             organization=organization,
             lab_order=lab_order,
             test_code="X",

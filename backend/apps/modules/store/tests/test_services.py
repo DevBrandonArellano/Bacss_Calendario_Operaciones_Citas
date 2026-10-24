@@ -8,6 +8,7 @@ from apps.modules.store.services import (
     TransitionOrderUseCase,
 )
 from core import exceptions as domain_exceptions
+from core.context import tenant_scope
 
 pytestmark = pytest.mark.django_db
 
@@ -26,7 +27,11 @@ class TestCreateOrder:
         variant.refresh_from_db()
         assert variant.stock == 6
         assert order.total == 80  # 4 × 20.00 (precio del producto, sin override)
-        assert order.items.count() == 1
+        # El related manager de la FK inversa (`order.items`) pasa por
+        # `TenantAwareManager`, que necesita el tenant fijado en el
+        # contexto — `execute()` ya cerró su propio `tenant_scope`.
+        with tenant_scope(organization.id):
+            assert order.items.count() == 1
 
     def test_stock_insuficiente_lanza_conflict_error(self, organization, customer, branch, variant):
         use_case = CreateOrderUseCase(organization=organization)
@@ -84,7 +89,7 @@ class TestTransitionOrder:
         assert variant.stock == 10
 
     def test_transicion_invalida_lanza_conflict_error(self, organization, customer, branch):
-        order = Order.objects.all_objects.create(organization=organization, customer=customer, branch=branch)
+        order = Order.all_objects.create(organization=organization, customer=customer, branch=branch)
         with pytest.raises(domain_exceptions.ConflictError):
             TransitionOrderUseCase().execute(order, OrderStatus.DELIVERED)
 

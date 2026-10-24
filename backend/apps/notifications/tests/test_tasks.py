@@ -18,7 +18,7 @@ def _appointment_datetime(appointment):
 
 class TestSendAppointmentReminders:
     def test_envia_recordatorio_por_email_dentro_de_la_ventana(self, organization, appointment):
-        NotificationSetting.objects.all_objects.create(
+        NotificationSetting.all_objects.create(
             organization=organization, reminder_offsets_hours=[24], email_enabled=True
         )
         frozen_now = _appointment_datetime(appointment) - timedelta(hours=24)
@@ -28,11 +28,11 @@ class TestSendAppointmentReminders:
 
         assert sent == 1
         assert len(mail.outbox) == 1
-        notification = Notification.objects.all_objects.get()
+        notification = Notification.all_objects.get()
         assert notification.event_code == "appointment.reminder.24h"
 
     def test_no_duplica_si_ya_se_envio(self, organization, appointment):
-        NotificationSetting.objects.all_objects.create(
+        NotificationSetting.all_objects.create(
             organization=organization, reminder_offsets_hours=[24], email_enabled=True
         )
         frozen_now = _appointment_datetime(appointment) - timedelta(hours=24)
@@ -45,7 +45,7 @@ class TestSendAppointmentReminders:
         assert len(mail.outbox) == 1
 
     def test_fuera_de_la_ventana_no_envia(self, organization, appointment):
-        NotificationSetting.objects.all_objects.create(
+        NotificationSetting.all_objects.create(
             organization=organization, reminder_offsets_hours=[24], email_enabled=True
         )
         frozen_now = _appointment_datetime(appointment) - timedelta(hours=48)
@@ -57,7 +57,7 @@ class TestSendAppointmentReminders:
         assert len(mail.outbox) == 0
 
     def test_canal_deshabilitado_no_envia(self, organization, appointment):
-        NotificationSetting.objects.all_objects.create(
+        NotificationSetting.all_objects.create(
             organization=organization, reminder_offsets_hours=[24], email_enabled=False
         )
         frozen_now = _appointment_datetime(appointment) - timedelta(hours=24)
@@ -70,7 +70,7 @@ class TestSendAppointmentReminders:
 
     def test_proveedor_mockeado_es_invocado_en_vez_de_enviar_directo(self, organization, appointment):
         """'disparo de tareas (proveedor mock)' del checklist de Fase 6."""
-        NotificationSetting.objects.all_objects.create(
+        NotificationSetting.all_objects.create(
             organization=organization, reminder_offsets_hours=[24], email_enabled=True
         )
         frozen_now = _appointment_datetime(appointment) - timedelta(hours=24)

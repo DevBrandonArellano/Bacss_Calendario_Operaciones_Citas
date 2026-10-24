@@ -46,16 +46,16 @@ class TestNotificationTemplate:
 
 class TestNotificationSetting:
     def test_unico_por_organizacion(self, organization):
-        NotificationSetting.objects.all_objects.create(organization=organization, reminder_offsets_hours=[24])
+        NotificationSetting.all_objects.create(organization=organization, reminder_offsets_hours=[24])
         with pytest.raises(IntegrityError):
-            NotificationSetting.objects.all_objects.create(
+            NotificationSetting.all_objects.create(
                 organization=organization, reminder_offsets_hours=[2]
             )
 
 
 class TestNotification:
     def test_valores_por_defecto(self, organization, customer):
-        notification = Notification.objects.all_objects.create(
+        notification = Notification.all_objects.create(
             organization=organization,
             customer=customer,
             channel=NotificationChannel.EMAIL,

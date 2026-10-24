@@ -20,7 +20,7 @@ def reception_client(api_client, organization, system_roles, make_user):
 @pytest.fixture
 def professional_user_and_employee(organization, branch, system_roles, make_user):
     user = make_user(organization, "abogado2@motorsecuador.test", roles=["professional"])
-    employee = Employee.objects.all_objects.create(
+    employee = Employee.all_objects.create(
         organization=organization, branch=branch, user=user, first_name="Lucía", last_name="Litigante"
     )
     return user, employee
@@ -57,14 +57,14 @@ class TestAlcanceSobreCasosPropios:
         professional_user_and_employee,
     ):
         _user, own_employee = professional_user_and_employee
-        LegalCase.objects.all_objects.create(
+        LegalCase.all_objects.create(
             organization=organization,
             case_number="CASE-AJENO",
             customer=customer,
             case_type="Civil",
             responsible_lawyer=lawyer,  # otro abogado, no el usuario autenticado
         )
-        LegalCase.objects.all_objects.create(
+        LegalCase.all_objects.create(
             organization=organization,
             case_number="CASE-PROPIO",
             customer=customer,
@@ -82,14 +82,14 @@ class TestAlcanceSobreCasosPropios:
         self, auth_client, legal_active, organization, customer, lawyer, professional_user_and_employee
     ):
         _user, own_employee = professional_user_and_employee
-        LegalCase.objects.all_objects.create(
+        LegalCase.all_objects.create(
             organization=organization,
             case_number="CASE-A",
             customer=customer,
             case_type="Civil",
             responsible_lawyer=lawyer,
         )
-        LegalCase.objects.all_objects.create(
+        LegalCase.all_objects.create(
             organization=organization,
             case_number="CASE-B",
             customer=customer,
@@ -108,13 +108,13 @@ class TestLegalCaseApi:
     def test_aislamiento_por_tenant(self, auth_client, legal_active, other_organization):
         from apps.customers.models import Customer
 
-        other_customer = Customer.objects.all_objects.create(
+        other_customer = Customer.all_objects.create(
             organization=other_organization, first_name="Ajeno", last_name="Ajeno"
         )
-        other_lawyer = Employee.objects.all_objects.create(
+        other_lawyer = Employee.all_objects.create(
             organization=other_organization, first_name="Otro", last_name="Abogado"
         )
-        LegalCase.objects.all_objects.create(
+        LegalCase.all_objects.create(
             organization=other_organization,
             case_number="CASE-OTRA-ORG",
             customer=other_customer,
@@ -172,7 +172,7 @@ class TestHearingAndCaseTaskScoping:
     ):
         from apps.modules.legal.models import Hearing
 
-        Hearing.objects.all_objects.create(
+        Hearing.all_objects.create(
             organization=organization, legal_case=legal_case, scheduled_at="2026-09-01T10:00:00Z"
         )
 

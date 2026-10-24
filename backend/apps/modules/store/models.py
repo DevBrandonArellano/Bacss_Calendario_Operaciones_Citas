@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from decimal import Decimal
+
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -178,5 +180,8 @@ class OrderItem(TenantAwareModel, TimeStampedModel):
         return f"{self.product_variant.sku} × {self.quantity}"
 
     def save(self, *args, **kwargs):
-        self.subtotal = self.unit_price * self.quantity
+        # Ver mismo comentario en `apps.modules.moto.models.WorkOrderItem.save`:
+        # `unit_price` puede llegar como `str` y sin cast la multiplicación
+        # es repetición de string, no aritmética.
+        self.subtotal = Decimal(self.unit_price) * self.quantity
         super().save(*args, **kwargs)

@@ -1,8 +1,22 @@
 import pytest
+from django.core.cache import cache
 from rest_framework.test import APIClient
 
 from apps.organizations.models import Organization
 from apps.users.models import Role, User
+
+
+@pytest.fixture(autouse=True)
+def _clear_cache():
+    """El cache (Redis, `CACHES` en `config/settings/base.py`) no se resetea
+    solo entre tests como sí lo hace la DB (pytest-django hace rollback por
+    test). Sin esto, el contador de `ScopedRateThrottle` (scope `auth`) se
+    acumula a lo largo de toda la suite y tests que corren después de varios
+    intentos de login empiezan a recibir 429 en vez del status que esperan.
+    """
+    cache.clear()
+    yield
+    cache.clear()
 
 
 @pytest.fixture

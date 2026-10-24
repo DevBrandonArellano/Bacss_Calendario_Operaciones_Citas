@@ -13,19 +13,19 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def branch(organization):
-    return Branch.objects.all_objects.create(organization=organization, name="Sucursal Norte")
+    return Branch.all_objects.create(organization=organization, name="Sucursal Norte")
 
 
 @pytest.fixture
 def service(organization):
-    return Service.objects.all_objects.create(
+    return Service.all_objects.create(
         organization=organization, name="Corte", duration_minutes=30, price="10.00"
     )
 
 
 @pytest.fixture
 def employee(organization, branch, service):
-    emp = Employee.objects.all_objects.create(
+    emp = Employee.all_objects.create(
         organization=organization, branch=branch, first_name="Ana", last_name="P"
     )
     emp.services.add(service)
@@ -60,18 +60,18 @@ def test_create_schedule_assigns_organization(auth_client, organization, branch)
     )
 
     assert response.status_code == status.HTTP_201_CREATED
-    schedule = Schedule.objects.all_objects.get(id=response.data["id"])
+    schedule = Schedule.all_objects.get(id=response.data["id"])
     assert schedule.organization_id == organization.id
 
 
 def test_list_schedules_never_returns_other_organization_data(
     auth_client, organization, other_organization, branch
 ):
-    Schedule.objects.all_objects.create(
+    Schedule.all_objects.create(
         organization=organization, branch=branch, weekday=0, start_time=time(9, 0), end_time=time(17, 0)
     )
-    other_branch = Branch.objects.all_objects.create(organization=other_organization, name="Ajena")
-    Schedule.objects.all_objects.create(
+    other_branch = Branch.all_objects.create(organization=other_organization, name="Ajena")
+    Schedule.all_objects.create(
         organization=other_organization,
         branch=other_branch,
         weekday=0,
@@ -88,14 +88,14 @@ def test_availability_endpoint_returns_slots(auth_client, organization, branch, 
     from datetime import date
 
     target = date.today() + timedelta(days=(7 - date.today().weekday()) % 7 or 7)
-    Schedule.objects.all_objects.create(
+    Schedule.all_objects.create(
         organization=organization,
         branch=branch,
         weekday=target.weekday(),
         start_time=time(9, 0),
         end_time=time(17, 0),
     )
-    Schedule.objects.all_objects.create(
+    Schedule.all_objects.create(
         organization=organization,
         employee=employee,
         weekday=target.weekday(),

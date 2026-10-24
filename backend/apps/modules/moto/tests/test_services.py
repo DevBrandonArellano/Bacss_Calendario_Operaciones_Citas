@@ -32,7 +32,7 @@ class TestCreateWorkOrder:
 
 class TestTransitionWorkOrder:
     def test_transicion_valida_actualiza_estado(self, organization, motorcycle):
-        work_order = WorkOrder.objects.all_objects.create(organization=organization, motorcycle=motorcycle)
+        work_order = WorkOrder.all_objects.create(organization=organization, motorcycle=motorcycle)
         use_case = TransitionWorkOrderUseCase()
 
         updated = use_case.execute(work_order, WorkOrderStatus.DIAGNOSIS)
@@ -40,7 +40,7 @@ class TestTransitionWorkOrder:
         assert updated.status == WorkOrderStatus.DIAGNOSIS
 
     def test_transicion_a_entregada_registra_fecha(self, organization, motorcycle):
-        work_order = WorkOrder.objects.all_objects.create(
+        work_order = WorkOrder.all_objects.create(
             organization=organization, motorcycle=motorcycle, status=WorkOrderStatus.FINISHED
         )
         use_case = TransitionWorkOrderUseCase()
@@ -50,7 +50,7 @@ class TestTransitionWorkOrder:
         assert updated.delivered_at is not None
 
     def test_transicion_invalida_lanza_conflict(self, organization, motorcycle):
-        work_order = WorkOrder.objects.all_objects.create(organization=organization, motorcycle=motorcycle)
+        work_order = WorkOrder.all_objects.create(organization=organization, motorcycle=motorcycle)
         use_case = TransitionWorkOrderUseCase()
 
         with pytest.raises(domain_exceptions.ConflictError):
@@ -59,7 +59,7 @@ class TestTransitionWorkOrder:
 
 class TestAddWorkOrderItem:
     def test_agregar_items_recalcula_total(self, organization, motorcycle):
-        work_order = WorkOrder.objects.all_objects.create(organization=organization, motorcycle=motorcycle)
+        work_order = WorkOrder.all_objects.create(organization=organization, motorcycle=motorcycle)
         use_case = AddWorkOrderItemUseCase()
 
         use_case.execute(
@@ -85,7 +85,7 @@ class TestAddWorkOrderItem:
         assert work_order.total == Decimal("25.00")
 
     def test_no_permite_agregar_items_a_orden_entregada(self, organization, motorcycle):
-        work_order = WorkOrder.objects.all_objects.create(
+        work_order = WorkOrder.all_objects.create(
             organization=organization, motorcycle=motorcycle, status=WorkOrderStatus.DELIVERED
         )
         use_case = AddWorkOrderItemUseCase()

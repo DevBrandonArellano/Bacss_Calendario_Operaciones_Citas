@@ -42,7 +42,7 @@ def resolve_template(*, organization, event_code: str, channel: str) -> Notifica
 
 
 def get_notification_settings(organization) -> NotificationSetting | None:
-    return NotificationSetting.objects.all_objects.filter(organization=organization).first()
+    return NotificationSetting.all_objects.filter(organization=organization).first()
 
 
 def _render_template(template: NotificationTemplate | None, context: dict) -> tuple[str, str]:

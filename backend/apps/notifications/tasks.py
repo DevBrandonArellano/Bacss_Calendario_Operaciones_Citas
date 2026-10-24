@@ -35,7 +35,7 @@ def _reminder_event_code(offset_hours: int) -> str:
 
 
 def _already_reminded(appointment: Appointment, event_code: str) -> bool:
-    return Notification.objects.all_objects.filter(
+    return Notification.all_objects.filter(
         organization=appointment.organization,
         customer=appointment.customer,
         event_code=event_code,
@@ -97,7 +97,7 @@ def send_appointment_reminders() -> int:
     now = timezone.now()
     sent_count = 0
 
-    for setting in NotificationSetting.objects.all_objects.select_related("organization"):
+    for setting in NotificationSetting.all_objects.select_related("organization"):
         organization = setting.organization
         use_case = CreateNotificationUseCase(organization=organization)
 
@@ -105,7 +105,7 @@ def send_appointment_reminders() -> int:
             target_from = now + timedelta(hours=offset_hours)
             target_to = target_from + timedelta(minutes=REMINDER_WINDOW_MINUTES)
 
-            appointments = Appointment.objects.all_objects.filter(
+            appointments = Appointment.all_objects.filter(
                 organization=organization,
                 status__in=ACTIVE_APPOINTMENT_STATUSES,
                 appointment_date__range=(target_from.date(), target_to.date()),

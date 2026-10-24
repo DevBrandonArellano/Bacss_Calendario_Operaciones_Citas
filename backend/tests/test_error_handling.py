@@ -31,7 +31,7 @@ def test_incoming_correlation_id_is_propagated(api_client):
 def test_not_found_of_foreign_tenant_resource_does_not_leak_403(auth_client, other_organization):
     from apps.branches.models import Branch
 
-    foreign = Branch.objects.all_objects.create(organization=other_organization, name="Ajena")
+    foreign = Branch.all_objects.create(organization=other_organization, name="Ajena")
 
     response = auth_client.get(reverse("branch-detail", args=[foreign.id]))
 
