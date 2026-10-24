@@ -6,6 +6,8 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 
 ---
 
+> **Actualización 2026-10-24.** (1) La suite del backend se corrió por primera vez contra PostgreSQL/Redis reales el 2026-08-25 (commit `776a113`, vía CI). Los ítems "Suite corrida contra PostgreSQL real" de las Fases 2-12 se marcaron el 2026-10-24 tras correr la suite completa en Docker: 328/328 en verde, cobertura global 91%. Quedan bajo el 90% exigido a control de acceso `core/owner_access.py` (57%) y `core/permissions.py` (80%). (2) La Fase 12B está desmarcada porque su código **no está en `main`** (worktree eliminado en `c52255d`, sin rama); ver `docs/roadmap.md`. (3) Existe CI en GitHub Actions y pipeline Jenkins (ver Fase 14).
+
 ## Fase 0 — `CLAUDE.md` (contexto permanente)
 
 - [x] Crear `CLAUDE.md` en la raíz con rol, visión, stack, principios de arquitectura, reglas de multitenancy, estructura de carpetas, convenciones y estándares transversales.
@@ -49,7 +51,7 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 - [x] Exception handler global DRF (formato de error uniforme)
 - [x] Logging estructurado RFC 5424 con correlation-id
 - [x] Tests escritos: aislamiento multitenant (Empresa A nunca ve datos de Empresa B), login/logout, permisos por rol (caja negra + caja blanca)
-- [ ] Suite de tests corrida y en verde contra PostgreSQL real, con cobertura medida (**pendiente**: se ejecuta al levantar Docker/Postgres — código y migraciones ya generados y listos)
+- [x] Suite de tests corrida y en verde contra PostgreSQL real, con cobertura medida (**pendiente**: se ejecuta al levantar Docker/Postgres — código y migraciones ya generados y listos) — **verificado 2026-10-24**: 328/328 tests contra Postgres 16 y Redis 7 reales (Docker), cobertura global 91%
 - [x] Instrucciones de cómo levantar entorno, migrar y probar (`backend/README.md`)
 - [ ] Commit convencional propuesto
 
@@ -63,7 +65,7 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 - [x] Tests frontend escritos y en verde: `CustomerListPage.test.tsx` (vitest)
 - [x] Frontend scaffold (Vite+React+TS), login, rutas protegidas — verificado con `tsc -b`, `eslint`, `vitest run` en verde
 - [x] Seed/demo actualizado con clientes ficticios (3 en Motors Ecuador, 2 en Laboratorio ABC)
-- [ ] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: se ejecuta junto con la de la Fase 2 al levantar Docker)
+- [x] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: se ejecuta junto con la de la Fase 2 al levantar Docker) — **verificado 2026-10-24**: 328/328 tests contra Postgres 16 y Redis 7 reales (Docker), cobertura global 91%
 - [ ] Commit convencional propuesto
 
 ## Fase 4 — Servicios y profesionales
@@ -76,7 +78,7 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 - [x] Tests frontend escritos y en verde: `ServiceListPage.test.tsx` (vitest, 4/4 tests totales)
 - [x] Frontend: pantallas de Servicios y Profesionales verificadas con `tsc -b`, `eslint`, `vitest run` en verde
 - [x] Seed/demo actualizado (3 servicios + 2 profesionales en Motors Ecuador; 2 servicios + 1 profesional en Laboratorio ABC)
-- [ ] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con Fases 2 y 3, al levantar Docker)
+- [x] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con Fases 2 y 3, al levantar Docker) — **verificado 2026-10-24**: 328/328 tests contra Postgres 16 y Redis 7 reales (Docker), cobertura global 91%
 - [ ] Commit convencional propuesto
 
 ## Fase 5 — Agenda, disponibilidad y citas (núcleo)
@@ -94,7 +96,7 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 - [x] Tests frontend escritos y en verde: `CalendarPage.test.tsx` (6/6 tests totales del frontend)
 - [x] Frontend verificado con `tsc -b`, `eslint`, `vitest run` en verde
 - [x] Seed/demo con horarios (lunes-viernes 09:00-18:00) y citas confirmadas de ejemplo
-- [ ] Suite de tests backend corrida y en verde contra PostgreSQL real, incluido el test de concurrencia (**pendiente**: junto con las fases anteriores, al levantar Docker — el `ExclusionConstraint`/`btree_gist` solo puede validarse contra Postgres real)
+- [x] Suite de tests backend corrida y en verde contra PostgreSQL real, incluido el test de concurrencia (**pendiente**: junto con las fases anteriores, al levantar Docker — el `ExclusionConstraint`/`btree_gist` solo puede validarse contra Postgres real) — **verificado 2026-10-24**: 328/328 tests contra Postgres 16 y Redis 7 reales (Docker), cobertura global 91%
 - [x] **Corregido (2026-08-15, hallazgo previo a Fase 7):** `TenantAwareManager.get_queryset()` devuelve `.none()` sin contexto de tenant fijado, y encadenar `.filter()` sobre eso queda vacío para siempre — rompía `CreateAppointmentUseCase`/`TransitionAppointmentUseCase` fuera de una request HTTP (tests directos de servicio, `test_concurrency.py`, `seed_demo.py`), incluido el test de concurrencia mencionado arriba, que ni siquiera podía llegar a probar la condición de carrera. Arreglado con `core.context.tenant_scope` (context manager que fija y restaura el tenant), aplicado en `execute()`/`transition()`/`reschedule()`. Tests de regresión: `tests/test_tenant_context.py`, `apps/appointments/tests/test_tenant_context_regression.py`.
 - [ ] Commit convencional propuesto
 
@@ -110,7 +112,7 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 - [x] Tests escritos: generación de notificaciones, renderizado de plantillas, disparo de tareas con proveedor mock (`apps/notifications/tests/`); frontend `NotificationsPage.test.tsx` (3/3)
 - [x] Sistema de diseño con tokens de color (light/dark) introducido en `frontend/src/index.css` (`:root` + `prefers-color-scheme: dark`), reemplazando los colores hardcodeados existentes, por el nuevo estándar UX de `CLAUDE.md`
 - [x] Frontend verificado con `tsc -b`, `eslint .`, `vitest run` en verde (9/9 tests totales del frontend)
-- [ ] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker — por ahora solo se verificó `ruff check` en verde y la colección de los tests nuevos sin errores de import/registro)
+- [x] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker — por ahora solo se verificó `ruff check` en verde y la colección de los tests nuevos sin errores de import/registro) — **verificado 2026-10-24**: 328/328 tests contra Postgres 16 y Redis 7 reales (Docker), cobertura global 91%
 - [ ] Commit convencional propuesto
 
 ## Fase 7 — Pagos
@@ -124,7 +126,7 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 - [x] Seed/demo actualizado (`seed_demo.py`: pago completo en la primera cita, pago parcial en la segunda, por organización)
 - [x] Frontend: pantalla `/pagos` (`PaymentsPage.tsx`) — buscar/seleccionar cliente, registrar pago con cita opcional, historial filtrable por estado, reembolso; historial de cliente (`CustomerHistoryPage.tsx`) ahora muestra los pagos reales (antes era un stub que devolvía `[]`) con enlace directo a registrar un pago nuevo
 - [x] Frontend verificado con `tsc -b`, `eslint .`, `vitest run` en verde (13/13 tests totales del frontend)
-- [ ] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker)
+- [x] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker) — **verificado 2026-10-24**: 328/328 tests contra Postgres 16 y Redis 7 reales (Docker), cobertura global 91%
 - [ ] Commit convencional propuesto
 
 ## Fase 8 — Módulo Taller de motos
@@ -139,7 +141,7 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 - [x] Frontend: `frontend/src/features/moto/` — `MotorcycleListPage`/`MotorcycleFormPage`/`MotorcycleHistoryPage` (CRUD de motos + historial vehicular) y `WorkOrderListPage`/`WorkOrderDetailPage` (crear orden, botones de transición solo hacia estados válidos según `VALID_WORK_ORDER_TRANSITIONS`, agregar ítems con recálculo de total); rutas `/motos`, `/motos/nueva`, `/motos/:id/editar`, `/motos/:id/historial`, `/ordenes-trabajo`, `/ordenes-trabajo/:id`; enlaces "Motos" y "Órdenes de trabajo" en `AppLayout`
 - [x] Nav/rutas dinámicas por módulo activo (`docs/module-system.md`): `AuthContext` consulta `GET /api/organizations/me/` y expone `activeModules`/`hasModule()`; `AppLayout` oculta los enlaces de un módulo inactivo; `routes/ModuleRoute.tsx` redirige a `/citas` si se navega directo a una ruta de un módulo inactivo (defensa adicional al 404 del backend)
 - [x] Frontend verificado con `tsc -b`, `eslint .`, `vitest run` en verde (22/22 tests totales del frontend)
-- [ ] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker)
+- [x] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker) — **verificado 2026-10-24**: 328/328 tests contra Postgres 16 y Redis 7 reales (Docker), cobertura global 91%
 - [ ] Commit convencional propuesto
 
 ## Deuda técnica — Auditoría WCAG 2.1 AA de pantallas existentes
@@ -165,7 +167,7 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 - [x] Frontend (nuevo en esta sesión, no existía): `frontend/src/features/laboratory/` — `PatientListPage`/`PatientFormPage` (CRUD de pacientes), `LabOrderListPage` (listar + crear pedido con pruebas dinámicas), `LabOrderDetailPage` (pruebas del pedido con enlace a gestión), `LabTestDetailPage` (pipeline completo: avanzar etapa, registrar muestra, registrar resultado, validar — pide el resultado clínico aparte vía el endpoint auditado y muestra un mensaje claro si el usuario no tiene `lab_results:read`, sin romper la pantalla); rutas `/laboratorio/pacientes`, `/laboratorio/pedidos`, `/laboratorio/pruebas/:id`; enlaces "Pacientes"/"Pedidos de laboratorio" en `AppLayout`, visibles solo si el módulo `laboratory` está activo
 - [x] Frontend verificado con `tsc -b`, `eslint .`, `vitest run` en verde (33/33 tests totales del frontend, incluidos 5 nuevos del módulo laboratorio)
 - [x] Backend verificado estáticamente sin Postgres real: `python manage.py check` sin errores, `makemigrations --check` sin cambios pendientes, `py_compile` de todos los archivos tocados sin errores de sintaxis
-- [ ] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker — Docker Desktop no estaba corriendo en esta sesión y se decidió no levantarlo todavía)
+- [x] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker — Docker Desktop no estaba corriendo en esta sesión y se decidió no levantarlo todavía) — **verificado 2026-10-24**: 328/328 tests contra Postgres 16 y Redis 7 reales (Docker), cobertura global 91%
 - [ ] Commit convencional propuesto
 
 ## Fase 10 — Módulo Tienda / lanzamientos
@@ -179,7 +181,7 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 - [x] Frontend: `frontend/src/features/store/` — `ProductListPage` (lista + filtro por estado + indicador de "Stock bajo") / `ProductFormPage` (CRUD de producto + gestión de variantes inline en modo edición), `OrderListPage` (listar + crear pedido con cliente/sucursal/ítems dinámicos), `OrderDetailPage` (detalle + botones de transición hacia los estados válidos); rutas `/tienda/productos`, `/tienda/pedidos`; enlaces "Productos"/"Pedidos de tienda" en `AppLayout`, visibles solo si el módulo `store` está activo
 - [x] Frontend verificado con `tsc -b`, `eslint .`, `vitest run` en verde (39/39 tests totales del frontend, incluidos 6 nuevos del módulo tienda)
 - [x] Backend verificado estáticamente sin Postgres real: `python manage.py check` sin errores, `makemigrations --check` sin cambios pendientes, `py_compile` sin errores de sintaxis, 28 tests recolectados sin errores de import (`pytest --collect-only`)
-- [ ] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker)
+- [x] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker) — **verificado 2026-10-24**: 328/328 tests contra Postgres 16 y Redis 7 reales (Docker), cobertura global 91%
 - [ ] Commit convencional propuesto
 
 ## Fase 11 — Módulo Legal (abogados)
@@ -194,7 +196,7 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 - [x] Frontend: `frontend/src/features/legal/` — `CaseListPage` (listar + crear caso) / `CaseDetailPage` (transición de estado, cronología con formulario de evento manual, audiencias, tareas con "marcar completada"); rutas `/legal/casos`, `/legal/casos/:id`; enlace "Casos" en `AppLayout`, visible solo si el módulo `legal` está activo
 - [x] Frontend verificado con `tsc -b`, `eslint .`, `vitest run` en verde (44/44 tests totales del frontend, incluidos 5 nuevos del módulo legal)
 - [x] Backend verificado estáticamente sin Postgres real: `python manage.py check` sin errores, `makemigrations --check` sin cambios pendientes, `py_compile` sin errores, 25 tests recolectados sin errores de import
-- [ ] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker)
+- [x] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker) — **verificado 2026-10-24**: 328/328 tests contra Postgres 16 y Redis 7 reales (Docker), cobertura global 91%
 - [ ] Commit convencional propuesto
 
 ## Fase 11B — Documentos, tareas y búsqueda global (transversal)
@@ -208,7 +210,7 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 - [x] Frontend: `frontend/src/features/documents/DocumentsPanel.tsx` y `frontend/src/features/tasks/TasksPanel.tsx` (componentes reutilizables, no páginas propias — se insertan donde haga falta), integrados en `CustomerHistoryPage` (documentos + tareas) y `CaseDetailPage` (documentos); `frontend/src/features/search/SearchPage.tsx` con ruta `/buscar` y enlace en `AppLayout` (siempre visible, no depende de módulo). Descarga implementada como blob autenticado (no enlace directo, porque requiere el header `Authorization`)
 - [x] Frontend verificado con `tsc -b`, `eslint .`, `vitest run` en verde (52/52 tests totales del frontend, incluidos 8 nuevos de esta fase)
 - [x] Backend verificado estáticamente sin Postgres real: `python manage.py check` sin errores, `makemigrations --check` sin cambios pendientes, 19 tests recolectados sin errores de import
-- [ ] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker)
+- [x] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker) — **verificado 2026-10-24**: 328/328 tests contra Postgres 16 y Redis 7 reales (Docker), cobertura global 91%
 - [ ] Commit convencional propuesto
 
 ## Fase 12 — Reportes y dashboards
@@ -223,10 +225,46 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 - [x] Frontend: `frontend/src/features/reports/` — `DashboardPage` (tarjetas + gráficos de barra en HTML/CSS plano, sin librería nueva) y `ReportsPage` (reporte general con rango de fechas + reportes por módulo activo, renderizados como lista legible en vez de JSON crudo). Gráficos diseñados siguiendo la skill `dataviz`: una sola serie por gráfico → un solo color de acento (la magnitud la codifica la longitud, no el color), estados del día reutilizan las clases `badge-status-*` ya existentes en vez de una paleta nueva, etiquetas directas en cada barra (lista corta, sin necesidad de tooltip). Ruta `/dashboard` (nuevo enlace principal en `AppLayout`, primero en el nav) y `/reportes`
 - [x] Frontend verificado con `tsc -b`, `eslint .`, `vitest run` en verde (57/57 tests totales del frontend, incluidos 5 nuevos de esta fase)
 - [x] Backend verificado estáticamente sin Postgres real: `python manage.py check` sin errores, `makemigrations --check` sin cambios pendientes (esta app no tiene modelos propios), 15 tests recolectados sin errores de import
-- [ ] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker)
+- [x] Suite de tests backend corrida y en verde contra PostgreSQL real (**pendiente**: junto con las fases anteriores, al retomar Docker) — **verificado 2026-10-24**: 328/328 tests contra Postgres 16 y Redis 7 reales (Docker), cobertura global 91%
 - [ ] Commit convencional propuesto
 
+## Rediseño UX/UI y SEO público (transversal, 2026-10-24)
+
+- [x] Tailwind v4 con tokens semánticos y modo claro/oscuro; contrastes AA verificados por cálculo
+- [x] Componentes `ui/` reutilizables (Button, Card, PageHeader, StatCard, StatusBadge) y `docs/design-system.md`
+- [x] `AppLayout` (barra lateral 256 px + barra superior 64 px, menú móvil accesible), login rediseñado
+- [x] Dashboard rediseñado (rejilla de 12 columnas, tarjetas de igual altura, esqueleto de carga)
+- [x] Sitio público: `/`, `/funcionalidades`, `/para-negocios` con H1 propio, FAQ y contenido veraz
+- [x] Pre-render estático por ruta + `app.html` (shell privado `noindex`) + hidratación probada
+- [x] Metadatos por ruta (title, description, canonical, Open Graph, Twitter), JSON-LD (Organization, WebSite, SoftwareApplication, FAQPage, BreadcrumbList), `robots.txt`, `sitemap.xml`, `llms.txt`
+- [x] Pruebas de regresión SEO/encabezados/hidratación; `tsc -b`, `eslint`, `vitest` (88 al cerrar esta etapa) y `npm run build` en verde
+- [ ] Migrar al nuevo sistema el resto de pantallas (Agenda, clientes, servicios, profesionales, pagos, notificaciones, reportes, módulos)
+- [ ] Verificación visual en navegador con capturas (no disponible en la iteración original)
+- [ ] Configuración de hosting: `VITE_SITE_URL`, fallback a `/app.html`, `X-Robots-Tag` privado, HTTPS y host canónico
+- [ ] `og:image` 1200×630; alta en Search Console y Bing; medir Lighthouse y Core Web Vitals (p75 con datos de campo)
+- [ ] Decisión de negocio: página de precios, artículos/recursos y reserva pública indexable
+
+## Rediseño del Dashboard y la Agenda (transversal, 2026-10-24)
+
+- [x] Auditoría previa: paginación de 20 en la Agenda, nombres por IDs, sin edición, «hoy» en UTC, reprogramar crea cita nueva
+- [x] Backend aditivo con TDD: nombres sin N+1, filtros `status__in`/`service`, notas editables auditadas, `/users/me/`, `?unread=true`, «hoy» por zona horaria
+- [x] Paleta y tokens de la especificación (claro/oscuro) con colores de estado por modo; desviaciones documentadas por contraste
+- [x] Barra lateral colapsable con tooltips, barra superior con título contextual, notificaciones y perfil
+- [x] Dashboard: período, indicadores con variación, gráficos con tooltip/teclado, próximas citas, acciones rápidas por permiso, estados vacío/error
+- [x] Agenda: Día, Semana, Mes, Por profesional, Lista; filtros combinables en URL; panel de detalle; acciones por estado; hora actual; huecos libres
+- [x] Estados diferenciados: sin citas, sin coincidencias con filtros, cargando, error de red, sin permiso (403), sin horarios configurados
+- [x] Nueva cita por grupos con horarios ocupados identificados, precarga desde la Agenda, conflicto 409 y anti-doble envío
+- [x] Cancelar y reprogramar con confirmación y resumen; edición de notas
+- [x] Pruebas: pytest 346, vitest 263, axe 0 violaciones (8 pantallas × 2 temas), E2E 17/17 contra el backend real
+- [ ] Migrar al nuevo sistema el resto de pantallas (clientes, servicios, profesionales, pagos, notificaciones, reportes, módulos)
+- [ ] Pantalla para configurar horarios laborales, descansos y bloqueos (hoy solo por API/admin)
+- [ ] Automatizar axe y el recorrido E2E en el CI (Playwright)
+- [ ] Medir Lighthouse y Core Web Vitals sobre el despliegue real
+- [ ] Decisión de producto: reprogramar «sobre la misma cita» (hoy se crea una nueva y la original queda como reprogramada)
+
 ## Fase 12B — API pública de integración (para terceros)
+
+> ⚠️ Código de las Tareas 1-9 construido en un worktree que **no está en `main`** y no se ha recuperado (2026-10-24). Todo sigue sin marcar hasta recuperarlo o rehacerlo.
 
 - [ ] Namespace `/api/public/v1/` en `apps/integrations/`
 - [ ] Modelo `ApiKey` (secreto hasheado, prefijo, rotación)
@@ -273,7 +311,7 @@ Roadmap detallado de todas las fases del proyecto, con cada entregable como íte
 - [ ] Gestión de variables de entorno con secretos fuera del repo
 - [ ] Backups automáticos de BD y documentos, política de retención, restauración probada
 - [ ] Logging RFC 5424 completo en producción (sin datos sensibles) + hook a Sentry/monitoreo
-- [ ] CI/CD (lint + tests) + `docs/deployment.md`
+- [ ] CI/CD (lint + tests) + `docs/deployment.md` — *parcial: ya existen `.github/workflows/ci.yml`, `Jenkinsfile` y `docs/jenkins/CONFIGURACION.md` (lint, tests, build); falta el despliegue y `docs/deployment.md`*
 - [ ] Arquitectura preparada para suscripciones futuras (planes con límites de sucursales/usuarios/módulos), sin implementar cobro real
 - [ ] Verificación: sistema levanta en modo producción con docker-compose
 - [ ] Verificación: backups se generan y restauran correctamente

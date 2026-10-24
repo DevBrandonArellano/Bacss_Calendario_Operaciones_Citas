@@ -27,7 +27,7 @@ Modelo conceptual: **Empresa → Sucursal → Usuarios → Clientes → Servicio
 | 13 | Endurecimiento de seguridad | ⏳ Pendiente |
 | 14 | Producción, observabilidad, suscripciones | ⏳ Pendiente |
 
-**Pendiente conocido:** la suite completa de `pytest` aún no se ha corrido contra PostgreSQL real (incluye el test de concurrencia anti doble-reserva, que requiere el `ExclusionConstraint` de Postgres). El backend está verificado estáticamente (`manage.py check`, `makemigrations --check`, `pytest --collect-only`) y el frontend en verde (`vitest`, `tsc -b`, `eslint`, `vite build`). Esto gana prioridad tras la migración a Django 5.2, que solo está validada estáticamente. Ver detalle en [`docs/roadmap.md`](docs/roadmap.md).
+**Estado de verificación (2026-10-24):** la suite del backend corre contra PostgreSQL y Redis reales (Docker): 346 pruebas, cobertura 91%; frontend: 263 pruebas, `tsc -b`, `eslint` y `npm run build` en verde; auditoría de accesibilidad (axe-core) sin hallazgos en las pantallas rediseñadas. Quedan por debajo del 90% exigido en control de acceso `core/owner_access.py` y `core/permissions.py`. Ver [`docs/roadmap.md`](docs/roadmap.md).
 
 **Estado de dependencias:** `pip-audit` y `npm audit` sin hallazgos (revisión del 2026-08-17). La bitácora de vulnerabilidades cerradas está en [`docs/security-iso27001.md`](docs/security-iso27001.md).
 
@@ -36,7 +36,7 @@ Modelo conceptual: **Empresa → Sucursal → Usuarios → Clientes → Servicio
 - **Backend:** Python 3.12 · Django 5 · Django REST Framework · Celery
 - **Base de datos:** PostgreSQL 16 (JSONB para datos flexibles de módulos, `btree_gist` para el constraint anti doble-reserva)
 - **Cache / broker:** Redis 7
-- **Frontend:** React 18 · TypeScript · Vite · React Router (sin librería de UI ni de gráficos: design system propio con tokens de color)
+- **Frontend:** React 18 · TypeScript · Vite · React Router · Tailwind CSS v4 (sistema de diseño propio con tokens de color claro/oscuro, ver [`docs/design-system.md`](docs/design-system.md); sin librería de gráficos) · sitio público pre-renderizado para SEO ([`docs/seo.md`](docs/seo.md))
 - **Auth:** JWT con refresh, rotación y blacklist (`djangorestframework-simplejwt`)
 - **Infra:** Docker + docker-compose, Nginx en producción
 - **Calidad:** pytest + pytest-django + pytest-cov, ruff, mypy, vitest + Testing Library, pre-commit
@@ -146,7 +146,7 @@ cp .env.example .env          # ajustar VITE_API_BASE_URL si el backend no está
 npm run dev
 ```
 
-App en `http://localhost:5173`.
+App en `http://localhost:5173`. Build de producción con pre-render de las páginas públicas: `VITE_SITE_URL=https://tu-dominio npm run build` (genera `dist/` con HTML por ruta, `robots.txt`, `sitemap.xml` y `app.html`; el hosting debe usar `app.html` como fallback del SPA, ver [`docs/seo.md`](docs/seo.md)).
 
 ### Datos de demostración
 

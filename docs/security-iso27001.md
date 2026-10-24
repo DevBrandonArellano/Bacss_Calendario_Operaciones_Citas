@@ -49,3 +49,15 @@ Arrastres por compatibilidad con Django 5.2: DRF 3.16.1, psycopg 3.2, celery 5.5
 **Deuda abierta de esta revisión:** la suite `pytest` completa no se ejecutó contra PostgreSQL real (Docker no disponible en el equipo de desarrollo en esa fecha). El salto Django 5.0 → 5.2 está validado solo estáticamente y debe re-verificarse con `pytest` completo — con atención al test de concurrencia, que depende de `ExclusionConstraint` + `btree_gist`.
 
 **Automatización pendiente (Fase 13):** correr ambos audits en CI y fallar el build ante vulnerabilidades de severidad alta o crítica, para que esta revisión deje de ser manual.
+
+## Cambios que afectan a controles (2026-10-24, rediseño de Dashboard y Agenda)
+
+| Control | Cambio | Evidencia |
+|---|---|---|
+| A.5.15 / A.8.3 Control de acceso | `GET /api/users/me/` expone solo los permisos del propio usuario autenticado; la interfaz los usa para mostrar u ocultar acciones y degrada ocultando (nunca concediendo) si no cargan. La autorización real sigue en cada endpoint. | `apps/users/tests/test_me.py`, `docs/auth-rbac.md` |
+| A.8.3 Aislamiento por empresa | `PATCH /api/appointments/{id}/notes/` y los nuevos filtros respetan el tenant; una cita de otra empresa responde 404 y no se modifica. | `apps/appointments/tests/test_agenda_api.py` |
+| A.8.15 Registro / no repudio | La edición de notas de una cita queda en `AuditLog` (valor anterior y nuevo, usuario, correlation-id). | misma suite |
+| A.8.28 Codificación segura | Estados y errores del servidor se muestran con mensajes sin jerga ni trazas; el cliente nunca interpreta texto del servidor como HTML. | `lib/errors.ts` y pruebas |
+| Privacidad por diseño | El perfil del área privada no incluye datos de la empresa en metadatos públicos (`noindex`, sin JSON-LD en rutas autenticadas). | `docs/seo.md` |
+
+Pendiente (Fase 13): revisión de permisos por rol de todos los endpoints nuevos con la batería de aislamiento por tenant.

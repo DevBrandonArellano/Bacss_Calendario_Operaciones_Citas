@@ -45,3 +45,7 @@ Los roles son configurables a nivel de permisos granulares (`Permission`, format
 - Permission classes de DRF por vista/acción, compuestas (`IsAuthenticated & HasPermission('customers:write') & ModuleActiveRequired('moto')` cuando aplica).
 - Las reglas de "alcance sobre lo propio" (profesional ve solo sus citas, cliente ve solo lo suyo) se aplican como filtro adicional en el queryset del manager tenant-aware, no como un chequeo posterior a nivel de objeto individual únicamente — así una lista paginada nunca filtra datos ajenos por accidente.
 - Cambios de rol/permiso son acción sensible → quedan en `AuditLog`.
+
+## Permisos efectivos en la interfaz (2026-10-24)
+
+`GET /api/users/me/` devuelve el perfil del usuario en sesión con la lista de códigos de permiso que sus roles le conceden. La interfaz lo usa **solo para mostrar u ocultar acciones** (p. ej. «Nueva cita», acciones rápidas del Dashboard). No es un control de seguridad: cada endpoint sigue validando el permiso en el servidor y, si la lista no carga, la UI degrada ocultando acciones (nunca concediendo). Solo expone los permisos del propio usuario.

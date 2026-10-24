@@ -17,14 +17,14 @@ Consumida exclusivamente por el frontend propio (React SPA) y, a futuro, apps m�
 | Auth | `POST /api/auth/register/`, `POST /api/auth/login/`, `POST /api/auth/logout/`, `POST /api/auth/token/refresh/`, `POST /api/auth/password-reset/`, `POST /api/auth/password-reset/confirm/` | Rate limiting reforzado (ver `docs/security-strategy.md`). |
 | Organización | `GET/PATCH /api/organizations/me/`, `GET/PATCH /api/organizations/me/modules/` | Solo Admin de empresa o Superadmin de plataforma. |
 | Sucursales | `GET/POST /api/branches/`, `GET/PATCH/DELETE /api/branches/{id}/` | |
-| Usuarios/roles | `GET/POST /api/users/`, `GET/PATCH/DELETE /api/users/{id}/`, `GET /api/roles/`, `POST /api/users/{id}/roles/` | |
+| Usuarios/roles | `GET /api/users/me/` (perfil y permisos efectivos del usuario en sesión; la UI solo los usa para mostrar u ocultar acciones, cada endpoint autoriza por su cuenta), `GET/POST /api/users/`, `GET/PATCH/DELETE /api/users/{id}/`, `GET /api/roles/`, `POST /api/users/{id}/roles/` | |
 | Clientes | `GET/POST /api/customers/`, `GET/PATCH/DELETE /api/customers/{id}/`, `GET /api/customers/search/?q=`, `GET /api/customers/{id}/history/` | Búsqueda por nombre, documento, teléfono, email. |
 | Servicios | `GET/POST /api/services/`, `GET/PATCH/DELETE /api/services/{id}/` | |
 | Empleados | `GET/POST /api/employees/`, `GET/PATCH/DELETE /api/employees/{id}/`, `POST /api/employees/{id}/services/` | |
 | Horarios/disponibilidad | `GET/POST /api/schedules/`, `GET/POST /api/availability-blocks/`, `GET /api/availability/?service_id=&employee_id=&branch_id=&date=` | El último endpoint expone el motor de disponibilidad (`docs/availability-engine.md`), solo lectura. |
-| Citas | `GET/POST /api/appointments/`, `GET/PATCH/DELETE /api/appointments/{id}/`, `POST /api/appointments/{id}/reschedule/`, `POST /api/appointments/{id}/cancel/`, `POST /api/appointments/{id}/confirm/` | Creación pasa por el motor de reservas (`docs/booking-engine.md`). |
+| Citas | `GET/POST /api/appointments/`, `GET /api/appointments/{id}/`, `POST /api/appointments/{id}/{confirm,start,complete,no-show,cancel,reschedule}/`, `PATCH /api/appointments/{id}/notes/` | Creación y reprogramación pasan por el motor de reservas (`docs/booking-engine.md`). La respuesta incluye `customer_name`, `service_name`, `employee_name` y `branch_name` (solo lectura). Filtros: `appointment_date`, `__gte`, `__lte`, `status` y `status__in` (lista separada por comas), `employee`, `service`, `customer`, `branch`; `page_size` hasta 100. Reprogramar **crea la cita nueva** y deja la original en `rescheduled` (conserva historial y libera el hueco). No se edita cliente/servicio/profesional/horario de una cita existente: solo sus notas, mientras esté abierta. |
 | Pagos | `GET/POST /api/payments/`, `GET /api/payments/{id}/`, `POST /api/payments/{id}/refund/` | |
-| Notificaciones | `GET /api/notifications/`, `POST /api/notifications/{id}/read/` | Centro de notificaciones internas. |
+| Notificaciones | `GET /api/notifications/` (`?unread=true` solo las no leídas), `POST /api/notifications/{id}/read/` | Centro de notificaciones internas. |
 | Documentos | `GET/POST /api/documents/`, `GET /api/documents/{id}/download/`, `DELETE /api/documents/{id}/` | Descargas auditadas. |
 | Tareas | `GET/POST /api/tasks/`, `GET/PATCH/DELETE /api/tasks/{id}/` | |
 | Búsqueda global | `GET /api/search/?q=` | Filtrado por módulos activos y permisos del usuario. |

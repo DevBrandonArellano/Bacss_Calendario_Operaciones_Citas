@@ -14,3 +14,15 @@ Objetivos medibles por característica. Se revisan al cierre de cada fase (crite
 | 8. Portabilidad | El stack completo levanta con `docker-compose up` en un entorno limpio sin pasos manuales adicionales; toda config sensible vía variables de entorno | Verificación manual en Fase 2 y Fase 14; `docker-compose config` en CI |
 
 Estos objetivos se revisan y ajustan si la experiencia de una fase muestra que un umbral es poco realista; cualquier ajuste se documenta aquí con la razón.
+
+## Resultados medidos — Dashboard y Agenda (2026-10-24)
+
+| Característica | Objetivo | Resultado | Cómo se midió |
+|---|---|---|---|
+| Usabilidad / accesibilidad | 0 violaciones WCAG 2.1 AA en pantallas nuevas | **0** en 8 pantallas × claro y oscuro (login, Dashboard, Agenda semana/día/mes/lista, detalle de cita, Nueva cita) | axe-core con Edge headless; incluye contraste real. Manual, fuera del CI |
+| Usabilidad / teclado | Flujos críticos sin ratón | Recorrer gráficos con flechas, abrir/cerrar el panel de la cita con Enter/Escape con retorno de foco, crear la cita desde el formulario | Recorrido E2E 17/17 + pruebas de componentes |
+| Eficiencia de desempeño | Sin N+1 en listados | Lista de citas con nombres en ≤ 12 consultas con 5 o más citas (no crece con el número de citas) | `django_assert_max_num_queries` |
+| Fiabilidad | Un fallo no se confunde con «sin datos» | Error de red, 403, filtros sin resultados y período vacío se muestran por separado; datos de otra consulta nunca se usan como actuales | Pruebas de `CalendarPage` y `DashboardPage` |
+| Adecuación funcional | Cifras comparables y veraces | Variación solo con base de comparación; «hoy» según la zona horaria de la empresa | Pruebas de `period`, `format` y `business_today` |
+| Mantenibilidad | Lógica fuera de la UI | Rangos, rejilla horaria, URL, acciones por estado y agrupación en módulos puros con pruebas unitarias | `features/appointments/agenda/*.test.ts` |
+| Eficiencia (front) | Core Web Vitals (LCP ≤ 2,5 s, INP ≤ 200 ms, CLS ≤ 0,1) | **Sin medir** | Pendiente: Lighthouse y datos de campo sobre el despliegue real |
