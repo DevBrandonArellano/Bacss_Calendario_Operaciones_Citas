@@ -10,10 +10,11 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <label className="theme-toggle">
+    <label className="theme-toggle block">
       <span className="sr-only">Tema</span>
       <select
         aria-label="Tema"
+        className="w-full rounded-xl text-sm"
         value={theme}
         onChange={(event) => setTheme(event.target.value as ThemePreference)}
       >

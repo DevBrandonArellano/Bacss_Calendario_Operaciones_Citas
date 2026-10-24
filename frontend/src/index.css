@@ -1,84 +1,271 @@
-/* Tokens de color (docs/CLAUDE.md: modo claro/oscuro obligatorio, sin
-   colores hardcodeados en componentes). Paleta clara por defecto en :root;
-   se sobreescribe bajo prefers-color-scheme: dark. */
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+
+/* Utilidades de Tailwind alimentadas por los tokens de abajo: como los tokens
+   cambian por modo (claro/oscuro/sistema), bg-surface, text-muted, etc. se
+   adaptan solos, sin repetir `dark:` en cada componente. */
+@theme inline {
+  --font-sans: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-page: var(--color-canvas);
+  --color-surface: var(--color-bg);
+  --color-subtle: var(--color-bg-subtle);
+  --color-ink: var(--color-text);
+  --color-muted: var(--color-text-muted);
+  --color-line: var(--color-border);
+  --color-brand: var(--color-primary);
+  --color-brand-hover: var(--color-primary-hover);
+  --color-brand-soft: var(--color-primary-soft);
+  --color-chrome: var(--color-nav);
+  --color-raised: var(--color-elevated);
+  --color-brand-active: var(--color-primary-active);
+  --color-on-brand: var(--color-on-primary);
+  --color-negative: var(--color-danger);
+  --color-negative-soft: var(--color-danger-bg);
+  --color-positive: var(--color-success);
+  --color-positive-soft: var(--color-success-bg);
+  --color-caution: var(--color-warning);
+  --color-caution-soft: var(--color-warning-bg);
+  --color-status-confirmed: var(--status-confirmed);
+  --color-status-confirmed-fg: var(--status-confirmed-fg);
+  --color-status-confirmed-soft: var(--status-confirmed-bg);
+  --color-status-pending: var(--status-pending);
+  --color-status-pending-fg: var(--status-pending-fg);
+  --color-status-pending-soft: var(--status-pending-bg);
+  --color-status-cancelled: var(--status-cancelled);
+  --color-status-cancelled-fg: var(--status-cancelled-fg);
+  --color-status-cancelled-soft: var(--status-cancelled-bg);
+  --color-status-completed: var(--status-completed);
+  --color-status-completed-fg: var(--status-completed-fg);
+  --color-status-completed-soft: var(--status-completed-bg);
+  --color-status-noshow: var(--status-noshow);
+  --color-status-noshow-fg: var(--status-noshow-fg);
+  --color-status-noshow-soft: var(--status-noshow-bg);
+  --color-status-progress: var(--status-progress);
+  --color-status-progress-fg: var(--status-progress-fg);
+  --color-status-progress-soft: var(--status-progress-bg);
+  --color-status-rescheduled: var(--status-rescheduled);
+  --color-status-rescheduled-fg: var(--status-rescheduled-fg);
+  --color-status-rescheduled-soft: var(--status-rescheduled-bg);
+  --color-hero-from: var(--color-hero-start);
+  --color-hero-to: var(--color-hero-end);
+  --color-on-hero-ink: var(--color-on-hero);
+  --radius-card: var(--radius-lg);
+  --shadow-card: var(--shadow-sm);
+  --shadow-float: var(--shadow-md);
+}
+
+/* Sistema de diseño (CLAUDE.md: tokens de color, modo claro/oscuro obligatorio,
+   WCAG 2.1 AA). Ningún componente define colores propios: todo sale de estos
+   tokens. Claro por defecto en :root; oscuro bajo prefers-color-scheme (sin
+   override manual) o con data-theme="dark" (override de useTheme/ThemeToggle).
+   Pares texto/fondo verificados >= 4.5:1 en ambos modos (ver docs/design-system.md).
+   Los colores de estado de cita tienen `--status-X` (acento: barras y puntos),
+   `--status-X-fg` (texto, AA) y `--status-X-bg` (fondo tenue). */
 :root {
   color-scheme: light dark;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: "Inter Variable", Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
+  --color-canvas: #f5f7fb;
+  --color-nav: #ffffff;
   --color-bg: #ffffff;
-  --color-bg-subtle: #f5f6f7;
-  --color-text: #14161a;
-  --color-text-muted: #55585e;
-  --color-border: #e2e2e2;
-  --color-primary: #2563eb;
-  --color-focus: #2563eb;
-  --color-danger: #b00020;
+  --color-bg-subtle: #f1f5f9;
+  --color-elevated: #ffffff;
+  --color-text: #0f172a;
+  --color-text-muted: #5b6b82;
+  --color-border: #e2e8f0;
+  --color-primary: #5145ff;
+  --color-primary-hover: #4338ca;
+  --color-primary-active: #3730a3;
+  --color-primary-soft: #ecebff;
+  --color-on-primary: #ffffff;
+  --color-focus: #5145ff;
+  --color-danger: #b42318;
   --color-danger-bg: #fdecea;
-  --color-success: #1e7e34;
-  --color-success-bg: #e7f6ea;
-  --color-warning: #8a6100;
-  --color-warning-bg: #fff4d9;
-  --color-overlay: rgba(0, 0, 0, 0.4);
+  --color-success: #166534;
+  --color-success-bg: #e3f5ea;
+  --color-warning: #92400e;
+  --color-warning-bg: #fff3d6;
+  --color-overlay: rgba(15, 23, 42, 0.45);
+  --color-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --color-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --status-confirmed: #16a34a;
+  --status-confirmed-fg: #166534;
+  --status-confirmed-bg: color-mix(in srgb, #16a34a 12%, var(--color-bg));
+  --status-pending: #d97706;
+  --status-pending-fg: #92400e;
+  --status-pending-bg: color-mix(in srgb, #d97706 12%, var(--color-bg));
+  --status-cancelled: #dc2626;
+  --status-cancelled-fg: #b91c1c;
+  --status-cancelled-bg: color-mix(in srgb, #dc2626 12%, var(--color-bg));
+  --status-completed: #0284c7;
+  --status-completed-fg: #075985;
+  --status-completed-bg: color-mix(in srgb, #0284c7 12%, var(--color-bg));
+  --status-noshow: #b91c1c;
+  --status-noshow-fg: #991b1b;
+  --status-noshow-bg: color-mix(in srgb, #b91c1c 12%, var(--color-bg));
+  --status-progress: #4f46e5;
+  --status-progress-fg: #3730a3;
+  --status-progress-bg: color-mix(in srgb, #4f46e5 12%, var(--color-bg));
+  --status-rescheduled: #64748b;
+  --status-rescheduled-fg: #475569;
+  --status-rescheduled-bg: color-mix(in srgb, #64748b 12%, var(--color-bg));
+  --color-hero-start: #4f46e5;
+  --color-hero-end: #3b2fc9;
+  --color-on-hero: #ffffff;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --sidebar-width: 16rem;
+  --sidebar-width-collapsed: 4.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
-  /* Solo aplica cuando no hay override manual (:root sin data-theme): con
-     data-theme="light"/"dark" fijado, el bloque de abajo manda en su lugar. */
   :root:not([data-theme]) {
-    --color-bg: #14161a;
-    --color-bg-subtle: #1c1f24;
-    --color-text: #f2f2f3;
-    --color-text-muted: #a8adb5;
-    --color-border: #2c2f36;
-    --color-primary: #5b8def;
-    --color-focus: #5b8def;
-    --color-danger: #ff6b6b;
-    --color-danger-bg: #3a1f1f;
+    --color-canvas: #0b1020;
+    --color-nav: #141b2f;
+    --color-bg: #151d32;
+    --color-bg-subtle: #1c2742;
+    --color-elevated: #1c2742;
+    --color-text: #f8fafc;
+    --color-text-muted: #a6b4cf;
+    --color-border: #293653;
+    --color-primary: #818cf8;
+    --color-primary-hover: #a5b4fc;
+    --color-primary-active: #6366f1;
+    --color-primary-soft: #222a54;
+    --color-on-primary: #0b1020;
+    --color-focus: #a5b4fc;
+    --color-danger: #fca5a5;
+    --color-danger-bg: #3a1d22;
     --color-success: #4ade80;
-    --color-success-bg: #163723;
-    --color-warning: #f5c451;
+    --color-success-bg: #12352a;
+    --color-warning: #fbbf24;
     --color-warning-bg: #3a2f10;
-    --color-overlay: rgba(0, 0, 0, 0.6);
+    --color-overlay: rgba(0, 0, 0, 0.65);
+    --color-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --color-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+    --status-confirmed: #22c55e;
+    --status-confirmed-fg: #4ade80;
+    --status-confirmed-bg: color-mix(in srgb, #22c55e 14%, var(--color-bg));
+    --status-pending: #f59e0b;
+    --status-pending-fg: #fbbf24;
+    --status-pending-bg: color-mix(in srgb, #f59e0b 14%, var(--color-bg));
+    --status-cancelled: #f87171;
+    --status-cancelled-fg: #fca5a5;
+    --status-cancelled-bg: color-mix(in srgb, #f87171 14%, var(--color-bg));
+    --status-completed: #38bdf8;
+    --status-completed-fg: #7dd3fc;
+    --status-completed-bg: color-mix(in srgb, #38bdf8 14%, var(--color-bg));
+    --status-noshow: #ef4444;
+    --status-noshow-fg: #fda4af;
+    --status-noshow-bg: color-mix(in srgb, #ef4444 14%, var(--color-bg));
+    --status-progress: #818cf8;
+    --status-progress-fg: #a5b4fc;
+    --status-progress-bg: color-mix(in srgb, #818cf8 14%, var(--color-bg));
+    --status-rescheduled: #94a3b8;
+    --status-rescheduled-fg: #cbd5e1;
+    --status-rescheduled-bg: color-mix(in srgb, #94a3b8 14%, var(--color-bg));
   }
 }
 
-/* Override manual persistido (useTheme/ThemeToggle): misma paleta que el
-   bloque prefers-color-scheme, pero aplicada explícitamente vía atributo
-   para que el usuario pueda elegir claro/oscuro sin depender del SO. */
 :root[data-theme="dark"] {
-  --color-bg: #14161a;
-  --color-bg-subtle: #1c1f24;
-  --color-text: #f2f2f3;
-  --color-text-muted: #a8adb5;
-  --color-border: #2c2f36;
-  --color-primary: #5b8def;
-  --color-focus: #5b8def;
-  --color-danger: #ff6b6b;
-  --color-danger-bg: #3a1f1f;
+  --color-canvas: #0b1020;
+  --color-nav: #141b2f;
+  --color-bg: #151d32;
+  --color-bg-subtle: #1c2742;
+  --color-elevated: #1c2742;
+  --color-text: #f8fafc;
+  --color-text-muted: #a6b4cf;
+  --color-border: #293653;
+  --color-primary: #818cf8;
+  --color-primary-hover: #a5b4fc;
+  --color-primary-active: #6366f1;
+  --color-primary-soft: #222a54;
+  --color-on-primary: #0b1020;
+  --color-focus: #a5b4fc;
+  --color-danger: #fca5a5;
+  --color-danger-bg: #3a1d22;
   --color-success: #4ade80;
-  --color-success-bg: #163723;
-  --color-warning: #f5c451;
+  --color-success-bg: #12352a;
+  --color-warning: #fbbf24;
   --color-warning-bg: #3a2f10;
-  --color-overlay: rgba(0, 0, 0, 0.6);
+  --color-overlay: rgba(0, 0, 0, 0.65);
+  --color-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --color-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --status-confirmed: #22c55e;
+  --status-confirmed-fg: #4ade80;
+  --status-confirmed-bg: color-mix(in srgb, #22c55e 14%, var(--color-bg));
+  --status-pending: #f59e0b;
+  --status-pending-fg: #fbbf24;
+  --status-pending-bg: color-mix(in srgb, #f59e0b 14%, var(--color-bg));
+  --status-cancelled: #f87171;
+  --status-cancelled-fg: #fca5a5;
+  --status-cancelled-bg: color-mix(in srgb, #f87171 14%, var(--color-bg));
+  --status-completed: #38bdf8;
+  --status-completed-fg: #7dd3fc;
+  --status-completed-bg: color-mix(in srgb, #38bdf8 14%, var(--color-bg));
+  --status-noshow: #ef4444;
+  --status-noshow-fg: #fda4af;
+  --status-noshow-bg: color-mix(in srgb, #ef4444 14%, var(--color-bg));
+  --status-progress: #818cf8;
+  --status-progress-fg: #a5b4fc;
+  --status-progress-bg: color-mix(in srgb, #818cf8 14%, var(--color-bg));
+  --status-rescheduled: #94a3b8;
+  --status-rescheduled-fg: #cbd5e1;
+  --status-rescheduled-bg: color-mix(in srgb, #94a3b8 14%, var(--color-bg));
 }
 
 :root[data-theme="light"] {
+  --color-canvas: #f5f7fb;
+  --color-nav: #ffffff;
   --color-bg: #ffffff;
-  --color-bg-subtle: #f5f6f7;
-  --color-text: #14161a;
-  --color-text-muted: #55585e;
-  --color-border: #e2e2e2;
-  --color-primary: #2563eb;
-  --color-focus: #2563eb;
-  --color-danger: #b00020;
+  --color-bg-subtle: #f1f5f9;
+  --color-elevated: #ffffff;
+  --color-text: #0f172a;
+  --color-text-muted: #5b6b82;
+  --color-border: #e2e8f0;
+  --color-primary: #5145ff;
+  --color-primary-hover: #4338ca;
+  --color-primary-active: #3730a3;
+  --color-primary-soft: #ecebff;
+  --color-on-primary: #ffffff;
+  --color-focus: #5145ff;
+  --color-danger: #b42318;
   --color-danger-bg: #fdecea;
-  --color-success: #1e7e34;
-  --color-success-bg: #e7f6ea;
-  --color-warning: #8a6100;
-  --color-warning-bg: #fff4d9;
-  --color-overlay: rgba(0, 0, 0, 0.4);
+  --color-success: #166534;
+  --color-success-bg: #e3f5ea;
+  --color-warning: #92400e;
+  --color-warning-bg: #fff3d6;
+  --color-overlay: rgba(15, 23, 42, 0.45);
+  --color-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --color-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --status-confirmed: #16a34a;
+  --status-confirmed-fg: #166534;
+  --status-confirmed-bg: color-mix(in srgb, #16a34a 12%, var(--color-bg));
+  --status-pending: #d97706;
+  --status-pending-fg: #92400e;
+  --status-pending-bg: color-mix(in srgb, #d97706 12%, var(--color-bg));
+  --status-cancelled: #dc2626;
+  --status-cancelled-fg: #b91c1c;
+  --status-cancelled-bg: color-mix(in srgb, #dc2626 12%, var(--color-bg));
+  --status-completed: #0284c7;
+  --status-completed-fg: #075985;
+  --status-completed-bg: color-mix(in srgb, #0284c7 12%, var(--color-bg));
+  --status-noshow: #b91c1c;
+  --status-noshow-fg: #991b1b;
+  --status-noshow-bg: color-mix(in srgb, #b91c1c 12%, var(--color-bg));
+  --status-progress: #4f46e5;
+  --status-progress-fg: #3730a3;
+  --status-progress-bg: color-mix(in srgb, #4f46e5 12%, var(--color-bg));
+  --status-rescheduled: #64748b;
+  --status-rescheduled-fg: #475569;
+  --status-rescheduled-bg: color-mix(in srgb, #64748b 12%, var(--color-bg));
 }
 
+/* Estilos de las pantallas aún no migradas a Tailwind. Van en la capa
+   `components` para que cualquier utilidad de Tailwind los pueda sobreescribir. */
+@layer components {
 .sr-only {
   position: absolute;
   width: 1px;
@@ -91,93 +278,173 @@
   border: 0;
 }
 
-.theme-toggle select {
-  background: var(--color-bg-subtle);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  padding: 0.3rem 0.5rem;
+/* Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background: var(--color-bg);
+  background: var(--color-canvas);
   color: var(--color-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+h1 {
+  font-size: 1.75rem;
+  margin: 0 0 1.25rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin: 1.5rem 0 0.75rem;
 }
 
 a {
   color: var(--color-primary);
-}
-
-:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
-}
-
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1.5rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.app-header nav a {
-  margin-right: 1rem;
-}
-
-.app-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.app-header nav a.nav-link-active {
-  font-weight: 700;
-  text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-main {
-  padding: 1.5rem;
-  max-width: 1100px;
-  margin: 0 auto;
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
 }
 
-.auth-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+/* Controles de formulario */
+input,
+select,
+textarea {
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.75rem;
+  min-height: 2.5rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  width: 320px;
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--color-text-muted);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+input::placeholder {
+  color: var(--color-text-muted);
+}
+
+label {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+/* Botones: secundario por defecto, primario en submit */
+button {
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1rem;
+  min-height: 2.5rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.15s, border-color 0.15s, transform 0.05s;
+}
+
+button:hover:not(:disabled) {
+  background: var(--color-bg-subtle);
+  border-color: var(--color-text-muted);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+button[type="submit"] {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+button[type="submit"]:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
 }
 
 .form-error {
   color: var(--color-danger);
+  background: var(--color-danger-bg);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.8rem;
+  margin: 0.25rem 0;
 }
 
+/* Tablas como tarjeta */
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
 th,
 td {
   text-align: left;
-  padding: 0.5rem;
+  padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--color-border);
+}
+
+th {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  background: var(--color-bg-subtle);
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+tbody tr:hover td {
+  background: var(--color-bg-subtle);
 }
 
 .toolbar {
   display: flex;
   gap: 0.75rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   flex-wrap: wrap;
   align-items: center;
 }
@@ -186,21 +453,27 @@ td {
   position: fixed;
   inset: 0;
   background: var(--color-overlay);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 1rem;
 }
 
 .modal {
   background: var(--color-bg);
   color: var(--color-text);
-  padding: 1.5rem;
-  border-radius: 8px;
-  min-width: 320px;
+  padding: 1.75rem;
+  border-radius: var(--radius-lg);
+  width: min(32rem, 100%);
   border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
 }
 
 .view-mode-active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -208,8 +481,15 @@ td {
 
 .pagination {
   display: flex;
+  align-items: center;
   gap: 0.5rem;
   margin-top: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
 }
 
 /* Centro de notificaciones */
@@ -337,7 +617,7 @@ td {
 
 .notification-item {
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 0.85rem 1rem;
   background: var(--color-bg);
 }
@@ -392,7 +672,7 @@ td {
   gap: 0.25rem;
   padding: 1rem;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: var(--color-bg);
 }
 
@@ -450,4 +730,23 @@ td {
   flex-shrink: 0;
   font-size: 0.85rem;
   font-variant-numeric: tabular-nums;
+}
+
+.stat-tile,
+.notification-item {
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-tile-value {
+  letter-spacing: -0.02em;
+}
+
+.bar-chart-track {
+  height: 14px;
+  border-radius: 999px;
+}
+
+.bar-chart-fill {
+  border-radius: 999px;
+}
 }

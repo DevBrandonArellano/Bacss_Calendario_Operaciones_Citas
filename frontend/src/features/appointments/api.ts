@@ -1,4 +1,5 @@
 import { apiClient } from "@/api/client";
+import { MAX_PAGE_SIZE, fetchAllPages, type AllPagesResult } from "@/lib/pagination";
 import type { Paginated } from "@/types/api";
 import type {
   Appointment,
@@ -12,12 +13,28 @@ export interface ListAppointmentsParams {
   employee?: string;
   branch?: string;
   customer?: string;
+  service?: string;
   status?: string;
+  /** Lista de estados separados por coma, p. ej. «pending,confirmed». */
+  status__in?: string;
   page?: number;
+  page_size?: number;
 }
 
 export async function listAppointments(params: ListAppointmentsParams): Promise<Paginated<Appointment>> {
   const response = await apiClient.get<Paginated<Appointment>>("/appointments/", { params });
+  return response.data;
+}
+
+/** Todas las citas de un rango (recorre las páginas): una semana o un mes superan los 20 por página. */
+export async function listAllAppointments(
+  params: Omit<ListAppointmentsParams, "page" | "page_size">
+): Promise<AllPagesResult<Appointment>> {
+  return fetchAllPages((page) => listAppointments({ ...params, page, page_size: MAX_PAGE_SIZE }));
+}
+
+export async function updateAppointmentNotes(id: string, notes: string): Promise<Appointment> {
+  const response = await apiClient.patch<Appointment>(`/appointments/${id}/notes/`, { notes });
   return response.data;
 }
 

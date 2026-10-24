@@ -11,9 +11,13 @@ export type AppointmentStatus =
 export interface Appointment {
   id: string;
   branch: string;
+  branch_name: string;
   customer: string;
+  customer_name: string;
   service: string;
+  service_name: string;
   employee: string;
+  employee_name: string;
   appointment_date: string;
   start_time: string;
   end_time: string;
@@ -59,4 +63,18 @@ export const STATUS_LABELS: Record<AppointmentStatus, string> = {
   cancelled: "Cancelada",
   no_show: "No asistió",
   rescheduled: "Reprogramada",
+};
+
+export const PAYMENT_STATUS_LABELS: Record<string, string> = {
+  unpaid: "Sin pagar",
+  partial: "Pago parcial",
+  paid: "Pagada",
+  refunded: "Reembolsada",
+};
+
+export const BOOKING_CHANNEL_LABELS: Record<string, string> = {
+  online: "Reserva online",
+  staff: "Personal del negocio",
+  phone: "Teléfono",
+  api: "Integración externa",
 };

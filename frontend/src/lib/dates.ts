@@ -39,3 +39,25 @@ export function weekdayLabel(date: Date): string {
 export function formatDateEs(date: Date): string {
   return date.toLocaleDateString("es-EC", { day: "2-digit", month: "short", year: "numeric" });
 }
+
+/** «2026-10-24» → «24 oct». */
+export function formatDayMonth(isoDate: string): string {
+  return parseISODate(isoDate)
+    .toLocaleDateString("es-EC", { day: "numeric", month: "short" })
+    .replace(".", "");
+}
+
+export function isSameDay(a: Date, b: Date): boolean {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+
+/** «2026-10-26» → «Lunes, 26 de octubre de 2026». */
+export function formatLongDate(isoDate: string): string {
+  const label = parseISODate(isoDate).toLocaleDateString("es-EC", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}

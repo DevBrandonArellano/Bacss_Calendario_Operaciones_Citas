@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 import { BookAppointmentPage } from "@/features/appointments/BookAppointmentPage";
 import { CalendarPage } from "@/features/appointments/CalendarPage";
@@ -19,6 +19,7 @@ import { ServiceFormPage } from "@/features/services/ServiceFormPage";
 import { ServiceListPage } from "@/features/services/ServiceListPage";
 import { ModuleLayout } from "@/routes/ModuleLayout";
 import { ProtectedLayout } from "@/routes/ProtectedLayout";
+import { publicRoutes } from "@/routes/publicRoutes";
 
 // Las pantallas de módulo se cargan bajo demanda: una organización solo baja el
 // código de los módulos que tiene activos (docs/module-system.md).
@@ -79,7 +80,7 @@ export function App() {
     <AuthProvider>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<Navigate to="/citas" replace />} />
+        {publicRoutes}
 
         <Route element={<ProtectedLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />

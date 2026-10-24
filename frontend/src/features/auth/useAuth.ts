@@ -1,5 +1,13 @@
 import { createContext, useContext } from "react";
 
+import type { UserProfile } from "@/types/user";
+
+export interface OrganizationInfo {
+  name: string;
+  timezone: string;
+  currency: string;
+}
+
 export interface AuthContextValue {
   isAuthenticated: boolean;
   /** Módulos especializados activos para la organización del usuario
@@ -8,6 +16,12 @@ export interface AuthContextValue {
   modulesLoaded: boolean;
   activeModules: string[];
   hasModule: (moduleCode: string) => boolean;
+  /** Datos de la empresa en sesión que la UI necesita para formatear (zona horaria, moneda). */
+  organization: OrganizationInfo | null;
+  /** Perfil del usuario en sesión; `null` mientras carga o si no pudo obtenerse. */
+  profile: UserProfile | null;
+  /** ¿El usuario tiene este permiso? Solo para mostrar/ocultar acciones (el backend autoriza). */
+  can: (permission: string) => boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }

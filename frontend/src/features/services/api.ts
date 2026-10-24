@@ -6,6 +6,7 @@ export interface ServiceListParams {
   page?: number;
   ordering?: string;
   status?: string;
+  page_size?: number;
 }
 
 export async function listServices(params: ServiceListParams): Promise<Paginated<Service>> {

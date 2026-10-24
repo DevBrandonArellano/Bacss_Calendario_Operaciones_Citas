@@ -6,6 +6,7 @@ export interface EmployeeListParams {
   page?: number;
   ordering?: string;
   is_active?: boolean;
+  page_size?: number;
 }
 
 export async function listEmployees(params: EmployeeListParams): Promise<Paginated<Employee>> {
